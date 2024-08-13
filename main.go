@@ -1,0 +1,64 @@
+/*
+Zettelkasten - plain text notes with toml metadata
+*/
+package main
+
+import "flag"
+import "log"
+import "os"
+
+var logger *log.Logger
+
+func init() {
+	logger = log.New(os.Stderr, "", 0)
+}
+
+func main() {
+	// Global flags.
+	flagConfigPath := flag.String(
+		"config",
+		"~/.config/zettelkasten/config.toml",
+		"Path to config.toml file",
+	)
+
+	// 'new' cmd flags.
+	cmdNew := flag.NewFlagSet("new", flag.ExitOnError)
+	var cmdNewFlagStdout bool
+	cmdNew.BoolVar(
+		&cmdNewFlagStdout,
+		"stdout",
+		true,
+		"If true, print new note to stdout, otherwise save to file.",
+	)
+	cmdNew.BoolVar(&cmdNewFlagStdout, "s", true, "(shorthand for --stdout)")
+
+	// Parse global flags.
+	flag.Parse()
+
+	// Parse subcommand flags.
+	args := flag.Args()
+	if len(args) == 0 {
+		log.Fatal("Please specify a subcommand.")
+	}
+	cmd, args := args[0], args[1:]
+
+	config, err := GetConfigFromFile(expandHomeDir(*flagConfigPath))
+	if err != nil {
+		logger.Fatalf("Cannot load config: %s", err.Error())
+	}
+
+	switch cmd {
+	case "new":
+		cmdNew.Parse(args)
+		options := CmdNewOptions{
+			RootDir: expandHomeDir(config.Path),
+			Stdout:  cmdNewFlagStdout,
+		}
+		err := RunCmdNew(options)
+		if err != nil {
+			logger.Fatalf("Program failed due to: %s", err.Error())
+		}
+	default:
+		logger.Fatalf("Unsupported command: '%s':", cmd)
+	}
+}
