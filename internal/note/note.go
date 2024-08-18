@@ -4,7 +4,6 @@ Package note defines representation and methods of a single zettelkasten note
 package note
 
 import "fmt"
-import "os"
 import "regexp"
 import "strings"
 
@@ -58,14 +57,4 @@ func LoadNote(content string) (res Note, err error) {
 	}
 
 	return Note{Header: header, Body: bodyRaw}, nil
-}
-
-// LoadNoteFromFile unmarshalls Note from file pointed by a given path
-// argument.
-func LoadNoteFromFile(path string) (res Note, err error) {
-	content, err := os.ReadFile(path)
-	if err != nil {
-		return Note{}, err
-	}
-	return LoadNote(string(content))
 }
