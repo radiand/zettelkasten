@@ -7,6 +7,8 @@ import "flag"
 import "log"
 import "os"
 
+import "github.com/radiand/zettelkasten/internal/osutils"
+
 var logger *log.Logger
 
 func init() {
@@ -42,7 +44,7 @@ func main() {
 	}
 	cmd, args := args[0], args[1:]
 
-	config, err := GetConfigFromFile(expandHomeDir(*flagConfigPath))
+	config, err := GetConfigFromFile(osutils.ExpandHomeDir(*flagConfigPath))
 	if err != nil {
 		logger.Fatalf("Cannot load config: %s", err.Error())
 	}
@@ -51,7 +53,7 @@ func main() {
 	case "new":
 		cmdNew.Parse(args)
 		options := CmdNewOptions{
-			RootDir: expandHomeDir(config.Path),
+			RootDir: osutils.ExpandHomeDir(config.Path),
 			Stdout:  cmdNewFlagStdout,
 		}
 		err := RunCmdNew(options)
