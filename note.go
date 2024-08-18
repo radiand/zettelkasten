@@ -4,6 +4,7 @@ import "fmt"
 import "os"
 import "regexp"
 import "slices"
+import "sort"
 import "strings"
 import "time"
 
@@ -41,6 +42,17 @@ func (header *Header) ToToml() (res string, err error) {
 	return string(marshalled), nil
 }
 
+// Arrange enforces unified style of Headers. It modifies Header in place.
+func (header *Header) Arrange() {
+	// All tags must be lowercase.
+	for i := 0; i < len(header.Tags); i++ {
+		header.Tags[i] = strings.ToLower(header.Tags[i])
+	}
+	sort.Sort(sort.StringSlice(header.Tags))
+	sort.Sort(sort.StringSlice(header.ReferredFrom))
+	sort.Sort(sort.StringSlice(header.RefersTo))
+}
+
 // Note is a single zettelkasten note.
 type Note struct {
 	Header Header
@@ -61,6 +73,11 @@ func (note *Note) ToToml() (res string, err error) {
 		return "", err
 	}
 	return fmt.Sprintf("```toml\n%s```\n\n%s", header, note.Body), nil
+}
+
+// Arrange enforces unified style of Notes. It modifies Note in place.
+func (note *Note) Arrange() {
+	note.Header.Arrange()
 }
 
 // NewNote creates new Note, dated now.

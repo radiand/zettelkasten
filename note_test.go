@@ -79,3 +79,22 @@ func TestNewNote(t *testing.T) {
 	assert.Equal(t, actual.Header.ReferredFrom, []string{})
 	assert.Equal(t, actual.Header.RefersTo, []string{})
 }
+
+func TestArrangeNote(t *testing.T) {
+	// GIVEN
+	note := NewNote()
+	note.Header.Tags = []string{"b", "C", "a"}
+	note.Header.ReferredFrom = []string{"20010101T010101Z", "19700101T010101Z"}
+	note.Header.RefersTo = []string{"20020202T020202Z", "19700202T020202Z"}
+
+	// WHEN
+	note.Arrange()
+
+	// THEN
+	expectedTags := []string{"a", "b", "c"}
+	expectedReferredFrom := []string{"19700101T010101Z", "20010101T010101Z"}
+	expectedRefersTo := []string{"19700202T020202Z", "20020202T020202Z"}
+	assert.Equal(t, note.Header.Tags, expectedTags)
+	assert.Equal(t, note.Header.ReferredFrom, expectedReferredFrom)
+	assert.Equal(t, note.Header.RefersTo, expectedRefersTo)
+}
