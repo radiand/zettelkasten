@@ -1,4 +1,7 @@
-package main
+/*
+Package note defines representation and methods of a single zettelkasten note
+*/
+package note
 
 import "fmt"
 import "os"

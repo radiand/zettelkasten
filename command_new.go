@@ -3,6 +3,8 @@ package main
 import "fmt"
 import "os"
 
+import "github.com/radiand/zettelkasten/internal/note"
+
 // CmdNewOptions is used to carry arguments for RunCmdNew.
 type CmdNewOptions struct {
 	RootDir string
@@ -14,7 +16,7 @@ type CmdNewOptions struct {
 // paths can be useful to integrate this application with external text
 // editors.
 func RunCmdNew(options CmdNewOptions) error {
-	note := NewNote()
+	note := note.NewNote()
 	marshaled, _ := note.ToToml()
 	if options.Stdout {
 		fmt.Print(marshaled)

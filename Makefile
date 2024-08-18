@@ -1,5 +1,5 @@
 lint:
-	revive -config revive.toml -set_exit_status
+	revive -config revive.toml -set_exit_status ./...
 
 test:
 	go test -v ./...
