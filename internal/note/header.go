@@ -3,6 +3,7 @@ package note
 import "slices"
 import "sort"
 import "strings"
+import "time"
 
 import "github.com/BurntSushi/toml"
 
@@ -47,4 +48,19 @@ func (header *Header) Arrange() {
 	sort.Sort(sort.StringSlice(header.Tags))
 	sort.Sort(sort.StringSlice(header.ReferredFrom))
 	sort.Sort(sort.StringSlice(header.RefersTo))
+}
+
+// NewHeader creates new Header, dated now.
+func NewHeader() Header {
+	now := time.Now()
+	uid := now.UTC().Format("20060102T150405Z")
+
+	return Header{
+		Title:        "",
+		Timestamp:    now.Format("2006-01-02T15:04:05-07:00"),
+		Uid:          uid,
+		Tags:         []string{},
+		ReferredFrom: []string{},
+		RefersTo:     []string{},
+	}
 }

@@ -7,7 +7,6 @@ import "fmt"
 import "os"
 import "regexp"
 import "strings"
-import "time"
 
 import "github.com/BurntSushi/toml"
 
@@ -40,19 +39,7 @@ func (note *Note) Arrange() {
 
 // NewNote creates new Note, dated now.
 func NewNote() Note {
-	now := time.Now()
-	uid := now.UTC().Format("20060102T150405Z")
-
-	header := Header{
-		Title:        "",
-		Timestamp:    now.Format("2006-01-02T15:04:05-07:00"),
-		Uid:          uid,
-		Tags:         []string{},
-		ReferredFrom: []string{},
-		RefersTo:     []string{},
-	}
-
-	return Note{Header: header, Body: ""}
+	return Note{Header: NewHeader(), Body: ""}
 }
 
 // LoadNote unmarshalls Note from string. This function expects that Note's
