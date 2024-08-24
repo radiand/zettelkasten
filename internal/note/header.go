@@ -1,5 +1,6 @@
 package note
 
+import "regexp"
 import "slices"
 import "sort"
 import "strings"
@@ -63,4 +64,11 @@ func NewHeader() Header {
 		ReferredFrom: []string{},
 		RefersTo:     []string{},
 	}
+}
+
+// getUidRegexp creates regexp matching Note Uid, i.e. filenames and references
+// of other Notes within Note's body.
+func getUidRegexp() *regexp.Regexp {
+	uidPat := `\d{4}\d{2}\d{2}T\d{2}\d{2}\d{2}Z`
+	return regexp.MustCompile(uidPat)
 }
