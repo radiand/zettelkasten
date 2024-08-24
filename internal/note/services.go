@@ -1,5 +1,6 @@
 package note
 
+import "fmt"
 import "slices"
 
 // FindUids returns all Uids found in given text.
@@ -46,4 +47,44 @@ func ReverseReferences(refersTo ReferenceMap) ReferenceMap {
 	}
 
 	return referredBy
+}
+
+// LinkNotes seeks for references in Notes and adjusts their Headers with
+// RefersTo and ReferredFrom.
+func LinkNotes(repository INoteRepository) error {
+	allRefersTo := FindReferences(repository)
+	allReferredFrom := ReverseReferences(allRefersTo)
+
+	uids, err := repository.List()
+	if err != nil {
+		return err
+	}
+
+	for _, uid := range uids {
+		refersTo, doesNoteReferTo := allRefersTo[uid]
+		referredFrom, isNoteReferredFrom := allReferredFrom[uid]
+
+		if !doesNoteReferTo && !isNoteReferredFrom {
+			continue
+		}
+
+		nt, err := repository.Get(uid)
+		if err != nil {
+			return fmt.Errorf("Cannot obtain note with UID '%s' due to: %w", uid, err)
+		}
+
+		if doesNoteReferTo {
+			nt.Header.RefersTo = refersTo
+		}
+		if isNoteReferredFrom {
+			nt.Header.ReferredFrom = referredFrom
+		}
+
+		err = repository.Put(nt)
+		if err != nil {
+			return fmt.Errorf("Cannot save note with UID '%s' due to: %w", uid, err)
+		}
+	}
+
+	return nil
 }

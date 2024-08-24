@@ -62,3 +62,33 @@ func TestReferences(t *testing.T) {
 	// THEN
 	assert.Equal(t, expected, actual)
 }
+
+func TestLinkNotes(t *testing.T) {
+	// GIVEN
+	note1 := NewNote()
+	note1uid := "19910101T010101Z"
+	note1.Header.Uid = note1uid
+	uid11 := "20240101T010101Z"
+	note1.Body = fmt.Sprintf("Refers to [[%s]]", uid11)
+
+	note2 := NewNote()
+	note2uid := "19920202T020202Z"
+	note2.Header.Uid = note2uid
+	uid21 := "20240202T020202Z"
+	note2.Body = fmt.Sprintf("Refers to [[%s]] and [[%s]]", uid21, note1uid)
+
+	repository := NewInMemoryNoteRepository()
+	repository.Put(note1)
+	repository.Put(note2)
+
+	// WHEN
+	err := LinkNotes(repository)
+	note1, _ = repository.Get(note1uid)
+	note2, _ = repository.Get(note2uid)
+
+	// THEN
+	assert.Nil(t, err)
+	assert.Equal(t, []string{uid11}, note1.Header.RefersTo)
+	assert.Equal(t, []string{note2uid}, note1.Header.ReferredFrom)
+	assert.Equal(t, []string{note1uid, uid21}, note2.Header.RefersTo)
+}
