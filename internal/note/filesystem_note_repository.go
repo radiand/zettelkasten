@@ -20,8 +20,16 @@ func (repo *FilesystemNoteRepository) Get(uid string) (Note, error) {
 }
 
 // Put saves Note to disk.
-func (repo *FilesystemNoteRepository) Put(_ Note) error {
-	return fmt.Errorf("Not implemented")
+func (repo *FilesystemNoteRepository) Put(note Note) error {
+	marshalled, err := note.ToToml()
+	if err != nil {
+		return fmt.Errorf("Cannot marshall note due to: %w", err)
+	}
+	err = os.WriteFile(repo.getNotePath(note.Header.Uid), []byte(marshalled), 0644)
+	if err != nil {
+		return fmt.Errorf("Cannot save note due to: %w", err)
+	}
+	return nil
 }
 
 // List obtains array of saved Notes' Uids.
