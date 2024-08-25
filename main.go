@@ -60,6 +60,14 @@ func main() {
 		if err != nil {
 			logger.Fatalf("Program failed due to: %s", err.Error())
 		}
+	case "health":
+		options := CmdHealthOptions{
+			RootDir: osutils.ExpandHomeDir(config.Path),
+		}
+		err := RunCmdHealth(options)
+		if err != nil {
+			logger.Fatalf("Program failed due to: %s", err.Error())
+		}
 	default:
 		logger.Fatalf("Unsupported command: '%s':", cmd)
 	}
