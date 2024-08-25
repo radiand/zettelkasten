@@ -19,6 +19,9 @@ func FindReferences(repository INoteRepository) ReferenceMap {
 	for _, uid := range uids {
 		nt, _ := repository.Get(uid)
 		currentNoteRefersTo := FindUids(nt.Body)
+		if currentNoteRefersTo == nil {
+			continue
+		}
 		slices.Sort(currentNoteRefersTo)
 		currentNoteRefersTo = slices.Compact(currentNoteRefersTo)
 

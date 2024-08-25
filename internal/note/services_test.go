@@ -63,6 +63,30 @@ func TestReferences(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
+// TestReferencesWhenNotesAreNotRelated verifies if notes that do not link
+// anywhere do not appear in the references map.
+func TestReferencesWhenNotesAreNotRelated(t *testing.T) {
+	// GIVEN
+	note1 := NewNote()
+	note1uid := "19910101T010101Z"
+	note1.Header.Uid = note1uid
+
+	note2 := NewNote()
+	note2uid := "19920202T020202Z"
+	note2.Header.Uid = note2uid
+
+	repository := NewInMemoryNoteRepository()
+	repository.Put(note1)
+	repository.Put(note2)
+
+	// WHEN
+	actual := FindReferences(repository)
+
+	// THEN
+	expected := make(ReferenceMap)
+	assert.Equal(t, expected, actual)
+}
+
 func TestLinkNotes(t *testing.T) {
 	// GIVEN
 	note1 := NewNote()
