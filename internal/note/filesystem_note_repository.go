@@ -46,6 +46,11 @@ func (repo *FilesystemNoteRepository) List() ([]string, error) {
 	return noteUids, nil
 }
 
+// NewFilesystemNoteRepository creates new instance of the repository.
+func NewFilesystemNoteRepository(rootDir string) *FilesystemNoteRepository {
+	return &FilesystemNoteRepository{RootDir: rootDir}
+}
+
 func (repo *FilesystemNoteRepository) getNotePath(uid string) string {
 	return filepath.Join(repo.RootDir, uid+".md")
 }
