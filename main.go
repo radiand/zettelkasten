@@ -68,6 +68,14 @@ func main() {
 		if err != nil {
 			logger.Fatalf("Program failed due to: %s", err.Error())
 		}
+	case "link":
+		options := CmdLinkOptions{
+			RootDir: osutils.ExpandHomeDir(config.Path),
+		}
+		err := RunCmdLink(options)
+		if err != nil {
+			logger.Fatalf("Program failed due to: %s", err.Error())
+		}
 	default:
 		logger.Fatalf("Unsupported command: '%s':", cmd)
 	}
