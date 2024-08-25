@@ -45,7 +45,7 @@ func NewNote() Note {
 // Header was marshalled to toml string, wrapped in ```toml``` fenced block, as
 // commonly done in markdown.
 func LoadNote(content string) (res Note, err error) {
-	zkRe := regexp.MustCompile("(?s)```toml\n(?P<header>.*)```\n*(?P<body>.*)\n?")
+	zkRe := regexp.MustCompile("(?s)```toml\n(?P<header>[^`]+)```\n*(?P<body>.*)\n?")
 	matched := zkRe.FindStringSubmatch(string(content))
 	headerRaw := matched[zkRe.SubexpIndex("header")]
 	bodyRaw := strings.TrimSpace(matched[zkRe.SubexpIndex("body")])
