@@ -76,7 +76,7 @@ func TestSaveNote(t *testing.T) {
 		"referred_from = [\"20200101T000000Z\"]\n" +
 		"refers_to = [\"20210101T000000Z\"]\n" +
 		"```\n\n" +
-		"My body is a cage"
+		"My body is a cage\n"
 
 	// WHEN
 	actual, _ := given.ToToml()

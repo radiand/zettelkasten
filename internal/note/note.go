@@ -28,7 +28,7 @@ func (note *Note) ToToml() (res string, err error) {
 	if err != nil {
 		return "", err
 	}
-	return fmt.Sprintf("```toml\n%s```\n\n%s", header, note.Body), nil
+	return fmt.Sprintf("```toml\n%s```\n\n%s\n", header, note.Body), nil
 }
 
 // Arrange enforces unified style of Notes. It modifies Note in place.
