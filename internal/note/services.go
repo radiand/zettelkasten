@@ -1,5 +1,6 @@
 package note
 
+import "errors"
 import "fmt"
 import "slices"
 
@@ -60,7 +61,7 @@ func LinkNotes(repository INoteRepository) error {
 
 	uids, err := repository.List()
 	if err != nil {
-		return err
+		return errors.Join(err, errors.New("Cannot list note uids"))
 	}
 
 	for _, uid := range uids {
@@ -73,7 +74,7 @@ func LinkNotes(repository INoteRepository) error {
 
 		nt, err := repository.Get(uid)
 		if err != nil {
-			return fmt.Errorf("Cannot obtain note with UID '%s' due to: %w", uid, err)
+			return errors.Join(err, fmt.Errorf("Cannot load note with UID '%s'", uid))
 		}
 
 		if doesNoteReferTo {
@@ -85,7 +86,7 @@ func LinkNotes(repository INoteRepository) error {
 
 		err = repository.Put(nt)
 		if err != nil {
-			return fmt.Errorf("Cannot save note with UID '%s' due to: %w", uid, err)
+			return errors.Join(err, fmt.Errorf("Cannot save note with UID '%s'", uid))
 		}
 	}
 

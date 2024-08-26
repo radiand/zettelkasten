@@ -1,6 +1,6 @@
 package note
 
-import "fmt"
+import "errors"
 import "os"
 import "path/filepath"
 import "strings"
@@ -23,11 +23,11 @@ func (repo *FilesystemNoteRepository) Get(uid string) (Note, error) {
 func (repo *FilesystemNoteRepository) Put(note Note) error {
 	marshalled, err := note.ToToml()
 	if err != nil {
-		return fmt.Errorf("Cannot marshall note due to: %w", err)
+		return errors.Join(err, errors.New("Cannot marshall note"))
 	}
 	err = os.WriteFile(repo.getNotePath(note.Header.Uid), []byte(marshalled), 0644)
 	if err != nil {
-		return fmt.Errorf("Cannot save note due to: %w", err)
+		return errors.Join(err, errors.New("Cannot save note"))
 	}
 	return nil
 }
@@ -36,7 +36,7 @@ func (repo *FilesystemNoteRepository) Put(note Note) error {
 func (repo *FilesystemNoteRepository) List() ([]string, error) {
 	notePaths, err := os.ReadDir(repo.RootDir)
 	if err != nil {
-		return []string{}, fmt.Errorf("Cannot list notes due to: %w", err)
+		return []string{}, errors.Join(err, errors.New("Cannot list notes"))
 	}
 
 	noteUids := []string{}

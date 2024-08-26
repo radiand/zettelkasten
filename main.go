@@ -46,7 +46,7 @@ func main() {
 
 	config, err := GetConfigFromFile(osutils.ExpandHomeDir(*flagConfigPath))
 	if err != nil {
-		logger.Fatalf("Cannot load config: %s", err.Error())
+		logger.Fatal("Cannot get config.\n", FmtErrors(err))
 	}
 
 	switch cmd {
@@ -58,7 +58,7 @@ func main() {
 		}
 		err := RunCmdNew(options)
 		if err != nil {
-			logger.Fatalf("Program failed due to: %s", err.Error())
+			logger.Fatal("Command failed.\n", FmtErrors(err))
 		}
 	case "health":
 		options := CmdHealthOptions{
@@ -66,7 +66,7 @@ func main() {
 		}
 		err := RunCmdHealth(options)
 		if err != nil {
-			logger.Fatalf("Program failed due to: %s", err.Error())
+			logger.Fatal("Command failed.\n", FmtErrors(err))
 		}
 	case "link":
 		options := CmdLinkOptions{
@@ -74,7 +74,7 @@ func main() {
 		}
 		err := RunCmdLink(options)
 		if err != nil {
-			logger.Fatalf("Program failed due to: %s", err.Error())
+			logger.Fatal("Command failed.\n", FmtErrors(err))
 		}
 	default:
 		logger.Fatalf("Unsupported command: '%s':", cmd)

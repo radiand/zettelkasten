@@ -1,7 +1,8 @@
 package main
 
+import "errors"
 import "os"
-import "fmt"
+
 import "github.com/BurntSushi/toml"
 
 // Config represents global, application wide options.
@@ -15,7 +16,7 @@ func GetConfig(content []byte) (Config, error) {
 	var config Config
 	err := toml.Unmarshal(content, &config)
 	if err != nil {
-		return Config{}, fmt.Errorf("Cannot get config due to: %w", err)
+		return Config{}, errors.Join(err, errors.New("Cannot get config"))
 	}
 	return config, nil
 }
@@ -24,11 +25,11 @@ func GetConfig(content []byte) (Config, error) {
 func GetConfigFromFile(path string) (Config, error) {
 	content, readErr := os.ReadFile(path)
 	if readErr != nil {
-		return Config{}, fmt.Errorf("Cannot get config due to: %w", readErr)
+		return Config{}, errors.Join(readErr, errors.New("Cannot get config"))
 	}
 	config, marshalErr := GetConfig(content)
 	if marshalErr != nil {
-		return Config{}, fmt.Errorf("Cannot get config due to: %w", marshalErr)
+		return Config{}, errors.Join(marshalErr, errors.New("Cannot get config"))
 	}
 	return config, nil
 }

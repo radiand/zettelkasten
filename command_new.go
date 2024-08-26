@@ -2,6 +2,7 @@ package main
 
 import "fmt"
 import "os"
+import "errors"
 
 import "github.com/radiand/zettelkasten/internal/note"
 
@@ -24,7 +25,7 @@ func RunCmdNew(options CmdNewOptions) error {
 		notePath := fmt.Sprintf("%s/%s.md", options.RootDir, note.Header.Uid)
 		err := os.WriteFile(notePath, []byte(marshaled), 0644)
 		if err != nil {
-			return fmt.Errorf("Cannot save note due to: %w", err)
+			return errors.Join(err, errors.New("Cannot save note"))
 		}
 		fmt.Println(notePath)
 	}

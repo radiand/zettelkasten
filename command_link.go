@@ -1,6 +1,6 @@
 package main
 
-import "fmt"
+import "errors"
 
 import "github.com/radiand/zettelkasten/internal/note"
 
@@ -15,7 +15,7 @@ func RunCmdLink(options CmdLinkOptions) error {
 	repository := note.NewFilesystemNoteRepository(options.RootDir)
 	err := note.LinkNotes(repository)
 	if err != nil {
-		return fmt.Errorf("RunCmdLink failed due to: %w", err)
+		return errors.Join(err, errors.New("RunCmdLink failed"))
 	}
 	return nil
 }

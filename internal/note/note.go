@@ -3,6 +3,7 @@ Package note defines representation and methods of a single zettelkasten note
 */
 package note
 
+import "errors"
 import "fmt"
 import "regexp"
 import "strings"
@@ -53,7 +54,7 @@ func LoadNote(content string) (res Note, err error) {
 	var header Header
 	_, err = toml.Decode(headerRaw, &header)
 	if err != nil {
-		return Note{}, err
+		return Note{}, errors.Join(err, errors.New("Cannot unmarshall note"))
 	}
 
 	return Note{Header: header, Body: bodyRaw}, nil
