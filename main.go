@@ -76,6 +76,14 @@ func main() {
 		if err != nil {
 			logger.Fatal("Command failed.\n", FmtErrors(err))
 		}
+	case "commit":
+		options := CmdGitCommitOptions{
+			RootDir: osutils.ExpandHomeDir(config.Path),
+		}
+		err := RunCmdGitCommit(options)
+		if err != nil {
+			logger.Fatal("Command failed.\n", FmtErrors(err))
+		}
 	default:
 		logger.Fatalf("Unsupported command: '%s':", cmd)
 	}
