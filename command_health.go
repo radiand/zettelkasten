@@ -5,15 +5,14 @@ import "fmt"
 
 import "github.com/radiand/zettelkasten/internal/note"
 
-// CmdHealthOptions is used to carry arguments for CmdNewOptions.
-type CmdHealthOptions struct {
+// CmdHealth carries required params to run command.
+type CmdHealth struct {
 	RootDir string
 }
 
-// RunCmdHealth tries to read all notes and checks if they can be correctly
-// parsed.
-func RunCmdHealth(options CmdHealthOptions) error {
-	repository := note.NewFilesystemNoteRepository(options.RootDir)
+// Run tries to read all notes and checks if they can be correctly parsed.
+func (cmd *CmdHealth) Run() error {
+	repository := note.NewFilesystemNoteRepository(cmd.RootDir)
 	uids, err := repository.List()
 	if err != nil {
 		return err

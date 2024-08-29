@@ -52,35 +52,35 @@ func main() {
 	switch cmd {
 	case "new":
 		cmdNew.Parse(args)
-		options := CmdNewOptions{
+		cmdNewRunner := CmdNew{
 			RootDir: osutils.ExpandHomeDir(config.Path),
 			Stdout:  cmdNewFlagStdout,
 		}
-		err := RunCmdNew(options)
+		err := cmdNewRunner.Run()
 		if err != nil {
 			logger.Fatal("Command failed.\n", FmtErrors(err))
 		}
 	case "health":
-		options := CmdHealthOptions{
+		cmdHealthRunner := CmdHealth{
 			RootDir: osutils.ExpandHomeDir(config.Path),
 		}
-		err := RunCmdHealth(options)
+		err := cmdHealthRunner.Run()
 		if err != nil {
 			logger.Fatal("Command failed.\n", FmtErrors(err))
 		}
 	case "link":
-		options := CmdLinkOptions{
+		cmdLinkRunner := CmdLink{
 			RootDir: osutils.ExpandHomeDir(config.Path),
 		}
-		err := RunCmdLink(options)
+		err := cmdLinkRunner.Run()
 		if err != nil {
 			logger.Fatal("Command failed.\n", FmtErrors(err))
 		}
 	case "commit":
-		options := CmdGitCommitOptions{
+		cmdCommitRunner := CmdCommit{
 			RootDir: osutils.ExpandHomeDir(config.Path),
 		}
-		err := RunCmdGitCommit(options)
+		err := cmdCommitRunner.Run()
 		if err != nil {
 			logger.Fatal("Command failed.\n", FmtErrors(err))
 		}

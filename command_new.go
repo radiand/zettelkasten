@@ -6,23 +6,23 @@ import "errors"
 
 import "github.com/radiand/zettelkasten/internal/note"
 
-// CmdNewOptions is used to carry arguments for RunCmdNew.
-type CmdNewOptions struct {
+// CmdNew carries required params to run command.
+type CmdNew struct {
 	RootDir string
 	Stdout  bool
 }
 
-// RunCmdNew creates new note. It can be instructed to print new note to stdout
+// Run creates new note. It can be instructed to print new note to stdout
 // (default) or to file, printing only the path to created note. Printing just
 // paths can be useful to integrate this application with external text
 // editors.
-func RunCmdNew(options CmdNewOptions) error {
+func (cmd *CmdNew) Run() error {
 	note := note.NewNote()
 	marshaled, _ := note.ToToml()
-	if options.Stdout {
+	if cmd.Stdout {
 		fmt.Print(marshaled)
 	} else {
-		notePath := fmt.Sprintf("%s/%s.md", options.RootDir, note.Header.Uid)
+		notePath := fmt.Sprintf("%s/%s.md", cmd.RootDir, note.Header.Uid)
 		err := os.WriteFile(notePath, []byte(marshaled), 0644)
 		if err != nil {
 			return errors.Join(err, errors.New("Cannot save note"))

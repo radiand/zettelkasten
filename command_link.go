@@ -4,18 +4,18 @@ import "errors"
 
 import "github.com/radiand/zettelkasten/internal/note"
 
-// CmdLinkOptions is used to carry arguments for RunCmdLink.
-type CmdLinkOptions struct {
+// CmdLink carries required params to run command.
+type CmdLink struct {
 	RootDir string
 }
 
-// RunCmdLink seeks for references between notes and updates their headers if
-// there are any.
-func RunCmdLink(options CmdLinkOptions) error {
-	repository := note.NewFilesystemNoteRepository(options.RootDir)
+// Run seeks for references between notes and updates their headers if there
+// are any.
+func (cmd *CmdLink) Run() error {
+	repository := note.NewFilesystemNoteRepository(cmd.RootDir)
 	err := note.LinkNotes(repository)
 	if err != nil {
-		return errors.Join(err, errors.New("RunCmdLink failed"))
+		return errors.Join(err, errors.New("CmdLink failed"))
 	}
 	return nil
 }
