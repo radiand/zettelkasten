@@ -32,8 +32,8 @@ func (fc *FileChanges) Any() bool {
 	return false
 }
 
-// Git interface provides version control functionalities with git.
-type Git interface {
+// IGit interface provides version control functionalities with git.
+type IGit interface {
 	Add() error
 	Commit() error
 	Stat(staged bool) (FileChanges, error)
