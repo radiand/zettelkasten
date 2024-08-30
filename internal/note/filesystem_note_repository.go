@@ -41,7 +41,10 @@ func (repo *FilesystemNoteRepository) List() ([]string, error) {
 
 	noteUids := []string{}
 	for _, file := range notePaths {
-		noteUids = append(noteUids, strings.TrimSuffix(file.Name(), ".md"))
+		uidRe := getUidRegexp()
+		if matches := uidRe.MatchString(file.Name()); matches {
+			noteUids = append(noteUids, strings.TrimSuffix(file.Name(), ".md"))
+		}
 	}
 	return noteUids, nil
 }
