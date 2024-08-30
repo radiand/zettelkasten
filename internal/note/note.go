@@ -3,12 +3,7 @@ Package note defines representation and methods of a single zettelkasten note
 */
 package note
 
-import "errors"
 import "fmt"
-import "regexp"
-import "strings"
-
-import "github.com/BurntSushi/toml"
 
 // Note is a single zettelkasten note.
 type Note struct {
@@ -40,22 +35,4 @@ func (note *Note) Arrange() {
 // NewNote creates new Note, dated now.
 func NewNote() Note {
 	return Note{Header: NewHeader(), Body: ""}
-}
-
-// LoadNote unmarshalls Note from string. This function expects that Note's
-// Header was marshalled to toml string, wrapped in ```toml``` fenced block, as
-// commonly done in markdown.
-func LoadNote(content string) (res Note, err error) {
-	zkRe := regexp.MustCompile("(?s)```toml\n(?P<header>[^`]+)```\n*(?P<body>.*)\n?")
-	matched := zkRe.FindStringSubmatch(string(content))
-	headerRaw := matched[zkRe.SubexpIndex("header")]
-	bodyRaw := strings.TrimSpace(matched[zkRe.SubexpIndex("body")])
-
-	var header Header
-	_, err = toml.Decode(headerRaw, &header)
-	if err != nil {
-		return Note{}, errors.Join(err, errors.New("Cannot unmarshall note"))
-	}
-
-	return Note{Header: header, Body: bodyRaw}, nil
 }
