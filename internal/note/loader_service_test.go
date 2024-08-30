@@ -31,7 +31,7 @@ func TestLoadNote(t *testing.T) {
 			file := header + tc.body
 
 			// WHEN
-			actual, err := LoadNote(file)
+			actual, err := UnmarshallNote(file)
 			assert.Nil(t, err)
 
 			// THEN

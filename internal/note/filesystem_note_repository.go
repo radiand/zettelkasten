@@ -16,7 +16,7 @@ func (repo *FilesystemNoteRepository) Get(uid string) (Note, error) {
 	if err != nil {
 		return Note{}, err
 	}
-	return LoadNote(string(content))
+	return UnmarshallNote(string(content))
 }
 
 // Put saves Note to disk.
