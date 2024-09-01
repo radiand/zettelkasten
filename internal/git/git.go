@@ -3,7 +3,6 @@ Package git provides just enough integration with git.
 */
 package git
 
-import "bytes"
 import "errors"
 import "fmt"
 import "os/exec"
@@ -34,7 +33,7 @@ func (fc *FileChanges) Any() bool {
 
 // IGit interface provides version control functionalities with git.
 type IGit interface {
-	Add() error
+	Add(paths ...string) error
 	Commit() error
 	Stat(staged bool) (FileChanges, error)
 }
@@ -45,12 +44,13 @@ type ShellGit struct {
 }
 
 // Add performs file staging.
-func (instance *ShellGit) Add() error {
-	cmd := exec.Command("git", "add", instance.WorktreePath)
-	cmd.Dir = instance.WorktreePath
-	_, err := cmd.Output()
+func (instance *ShellGit) Add(paths ...string) error {
+	cmd := exec.Command(
+		"git", "-C", instance.WorktreePath, "add", strings.Join(paths, " "),
+	)
+	out, err := cmd.CombinedOutput()
 	if err != nil {
-		return errors.Join(err, errors.New("Cannot perform git add"))
+		return errors.Join(err, fmt.Errorf("git add failed due to: %s", string(out)))
 	}
 	return nil
 }
@@ -85,19 +85,13 @@ func (instance *ShellGit) Commit() error {
 	populateWith(changes.Renamed, "renamed")
 	commitmsg := "auto: " + strings.Join(changesStringified, ", ")
 
-	cmd := exec.Command("git", "commit", "-m", commitmsg)
-	cmd.Dir = instance.WorktreePath
-	var stderr bytes.Buffer
-	cmd.Stderr = &stderr
+	cmd := exec.Command("git", "-C", instance.WorktreePath, "commit", "-m", commitmsg)
 
 	err = cmd.Run()
 	if err != nil {
-		return errors.Join(err, errors.New("git commit failed"))
-	}
-	if len(stderr.Bytes()) > 0 {
 		return errors.Join(
 			err,
-			fmt.Errorf("git commit returned: %s", string(stderr.Bytes())),
+			fmt.Errorf("git commit failed due to: %s", fmtExitError(err)),
 		)
 	}
 	return nil
@@ -106,6 +100,8 @@ func (instance *ShellGit) Commit() error {
 // Stat obtains number of changed files.
 func (instance *ShellGit) Stat(staged bool) (FileChanges, error) {
 	args := []string{
+		"-C",
+		instance.WorktreePath,
 		"diff",
 		"--name-status",
 	}
@@ -114,13 +110,9 @@ func (instance *ShellGit) Stat(staged bool) (FileChanges, error) {
 	}
 	cmd := exec.Command("git", args...)
 
-	// cd into directory where notes are stored and run git there. Using 'git
-	// -C <path>' is not an otion here because git fatals when called from
-	// another repository.
-	cmd.Dir = instance.WorktreePath
 	out, err := cmd.Output()
 	if err != nil {
-		return FileChanges{}, errors.Join(err, errors.New("Cannot perform git diff"))
+		return FileChanges{}, errors.Join(err, errors.New("git diff failed"))
 	}
 	changes := FileChanges{}
 	for _, line := range strings.Split(string(out), "\n") {
@@ -141,4 +133,17 @@ func (instance *ShellGit) Stat(staged bool) (FileChanges, error) {
 		}
 	}
 	return changes, nil
+}
+
+func fmtExitError(err error) string {
+	if exitErr, ok := err.(*exec.ExitError); ok {
+		if len(exitErr.Stderr) > 0 {
+			return fmt.Sprintf(
+				"%s (stderr: %s)",
+				exitErr.Error(),
+				string(exitErr.Stderr),
+			)
+		}
+	}
+	return err.Error()
 }

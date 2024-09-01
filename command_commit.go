@@ -4,17 +4,17 @@ import "github.com/radiand/zettelkasten/internal/git"
 
 // CmdCommit carries required params to run command.
 type CmdCommit struct {
-	RootDir string
+	rootDir string
+	git   git.IGit
 }
 
 // Run performs git commit with all changes that happened in RootDir directory.
 func (cmd CmdCommit) Run() error {
-	g := git.ShellGit{WorktreePath: cmd.RootDir}
-	err := g.Add()
+	err := cmd.git.Add(cmd.rootDir)
 	if err != nil {
 		return err
 	}
-	err = g.Commit()
+	err = cmd.git.Commit()
 	if err != nil {
 		return err
 	}

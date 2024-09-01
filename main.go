@@ -7,6 +7,7 @@ import "flag"
 import "log"
 import "os"
 
+import "github.com/radiand/zettelkasten/internal/git"
 import "github.com/radiand/zettelkasten/internal/osutils"
 
 var logger *log.Logger
@@ -49,6 +50,8 @@ func main() {
 		logger.Fatal("Cannot get config.\n", FmtErrors(err))
 	}
 
+	zkNotesRootDir := osutils.ExpandHomeDir(config.Path)
+
 	switch cmd {
 	case "new":
 		cmdNew.Parse(args)
@@ -78,7 +81,8 @@ func main() {
 		}
 	case "commit":
 		cmdCommitRunner := CmdCommit{
-			RootDir: osutils.ExpandHomeDir(config.Path),
+			rootDir: zkNotesRootDir,
+			git:     &git.ShellGit{WorktreePath: zkNotesRootDir},
 		}
 		err := cmdCommitRunner.Run()
 		if err != nil {
