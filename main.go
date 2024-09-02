@@ -50,7 +50,7 @@ func main() {
 		logger.Fatal("Cannot get config.\n", common.FmtErrors(err))
 	}
 
-	zettelkastenDir := common.ExpandHomeDir(config.Path)
+	zettelkastenDir := common.ExpandHomeDir(config.ZettelkastenDir)
 
 	switch cmd {
 	case "new":

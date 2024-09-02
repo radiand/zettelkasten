@@ -7,8 +7,8 @@ import "github.com/BurntSushi/toml"
 
 // Config represents global, application wide options.
 type Config struct {
-	// Path is a root directory where notes are stored.
-	Path string `toml:"path"`
+	// ZettelkastenDir is a root directory where notes are stored.
+	ZettelkastenDir string `toml:"path"`
 }
 
 // GetConfig unmarshalls Config from array of bytes.
