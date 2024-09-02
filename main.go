@@ -50,13 +50,13 @@ func main() {
 		logger.Fatal("Cannot get config.\n", FmtErrors(err))
 	}
 
-	zkNotesRootDir := osutils.ExpandHomeDir(config.Path)
+	zettelkastenDir := osutils.ExpandHomeDir(config.Path)
 
 	switch cmd {
 	case "new":
 		cmdNew.Parse(args)
 		cmdNewRunner := CmdNew{
-			RootDir: osutils.ExpandHomeDir(config.Path),
+			RootDir: zettelkastenDir,
 			Stdout:  cmdNewFlagStdout,
 		}
 		err := cmdNewRunner.Run()
@@ -65,7 +65,7 @@ func main() {
 		}
 	case "health":
 		cmdHealthRunner := CmdHealth{
-			RootDir: osutils.ExpandHomeDir(config.Path),
+			RootDir: zettelkastenDir,
 		}
 		err := cmdHealthRunner.Run()
 		if err != nil {
@@ -73,7 +73,7 @@ func main() {
 		}
 	case "link":
 		cmdLinkRunner := CmdLink{
-			RootDir: osutils.ExpandHomeDir(config.Path),
+			RootDir: zettelkastenDir,
 		}
 		err := cmdLinkRunner.Run()
 		if err != nil {
@@ -81,8 +81,8 @@ func main() {
 		}
 	case "commit":
 		cmdCommitRunner := CmdCommit{
-			rootDir: zkNotesRootDir,
-			git:     &git.ShellGit{WorktreePath: zkNotesRootDir},
+			rootDir: zettelkastenDir,
+			git:     &git.ShellGit{WorktreePath: zettelkastenDir},
 		}
 		err := cmdCommitRunner.Run()
 		if err != nil {
