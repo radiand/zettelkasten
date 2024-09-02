@@ -7,12 +7,12 @@ import "github.com/radiand/zettelkasten/internal/note"
 
 // CmdHealth carries required params to run command.
 type CmdHealth struct {
-	RootDir string
+	zettelkastenDir string
 }
 
 // Run tries to read all notes and checks if they can be correctly parsed.
 func (cmd *CmdHealth) Run() error {
-	repository := note.NewFilesystemNoteRepository(cmd.RootDir)
+	repository := note.NewFilesystemNoteRepository(cmd.zettelkastenDir)
 	uids, err := repository.List()
 	if err != nil {
 		return err

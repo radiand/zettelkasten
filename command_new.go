@@ -8,8 +8,8 @@ import "github.com/radiand/zettelkasten/internal/note"
 
 // CmdNew carries required params to run command.
 type CmdNew struct {
-	RootDir string
-	Stdout  bool
+	zettelkastenDir string
+	stdout  bool
 }
 
 // Run creates new note. It can be instructed to print new note to stdout
@@ -19,10 +19,10 @@ type CmdNew struct {
 func (cmd *CmdNew) Run() error {
 	note := note.NewNote()
 	marshaled, _ := note.ToToml()
-	if cmd.Stdout {
+	if cmd.stdout {
 		fmt.Print(marshaled)
 	} else {
-		notePath := fmt.Sprintf("%s/%s.md", cmd.RootDir, note.Header.Uid)
+		notePath := fmt.Sprintf("%s/%s.md", cmd.zettelkastenDir, note.Header.Uid)
 		err := os.WriteFile(notePath, []byte(marshaled), 0644)
 		if err != nil {
 			return errors.Join(err, errors.New("Cannot save note"))

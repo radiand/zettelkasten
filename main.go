@@ -56,8 +56,8 @@ func main() {
 	case "new":
 		cmdNew.Parse(args)
 		cmdNewRunner := CmdNew{
-			RootDir: zettelkastenDir,
-			Stdout:  cmdNewFlagStdout,
+			zettelkastenDir: zettelkastenDir,
+			stdout:          cmdNewFlagStdout,
 		}
 		err := cmdNewRunner.Run()
 		if err != nil {
@@ -65,7 +65,7 @@ func main() {
 		}
 	case "health":
 		cmdHealthRunner := CmdHealth{
-			RootDir: zettelkastenDir,
+			zettelkastenDir: zettelkastenDir,
 		}
 		err := cmdHealthRunner.Run()
 		if err != nil {
@@ -73,7 +73,7 @@ func main() {
 		}
 	case "link":
 		cmdLinkRunner := CmdLink{
-			RootDir: zettelkastenDir,
+			zettelkastenDir: zettelkastenDir,
 		}
 		err := cmdLinkRunner.Run()
 		if err != nil {
@@ -81,8 +81,8 @@ func main() {
 		}
 	case "commit":
 		cmdCommitRunner := CmdCommit{
-			rootDir: zettelkastenDir,
-			git:     &git.ShellGit{WorktreePath: zettelkastenDir},
+			zettelkastenDir: zettelkastenDir,
+			git:             &git.ShellGit{WorktreePath: zettelkastenDir},
 		}
 		err := cmdCommitRunner.Run()
 		if err != nil {
