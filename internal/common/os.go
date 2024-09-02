@@ -1,7 +1,4 @@
-/*
-Package osutils contains functions extending std os.
-*/
-package osutils
+package common
 
 import "os"
 import "strings"

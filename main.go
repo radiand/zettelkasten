@@ -7,8 +7,8 @@ import "flag"
 import "log"
 import "os"
 
+import "github.com/radiand/zettelkasten/internal/common"
 import "github.com/radiand/zettelkasten/internal/git"
-import "github.com/radiand/zettelkasten/internal/osutils"
 
 var logger *log.Logger
 
@@ -45,12 +45,12 @@ func main() {
 	}
 	cmd, args := args[0], args[1:]
 
-	config, err := GetConfigFromFile(osutils.ExpandHomeDir(*flagConfigPath))
+	config, err := GetConfigFromFile(common.ExpandHomeDir(*flagConfigPath))
 	if err != nil {
-		logger.Fatal("Cannot get config.\n", FmtErrors(err))
+		logger.Fatal("Cannot get config.\n", common.FmtErrors(err))
 	}
 
-	zettelkastenDir := osutils.ExpandHomeDir(config.Path)
+	zettelkastenDir := common.ExpandHomeDir(config.Path)
 
 	switch cmd {
 	case "new":
@@ -61,7 +61,7 @@ func main() {
 		}
 		err := cmdNewRunner.Run()
 		if err != nil {
-			logger.Fatal("Command failed.\n", FmtErrors(err))
+			logger.Fatal("Command failed.\n", common.FmtErrors(err))
 		}
 	case "health":
 		cmdHealthRunner := CmdHealth{
@@ -69,7 +69,7 @@ func main() {
 		}
 		err := cmdHealthRunner.Run()
 		if err != nil {
-			logger.Fatal("Command failed.\n", FmtErrors(err))
+			logger.Fatal("Command failed.\n", common.FmtErrors(err))
 		}
 	case "link":
 		cmdLinkRunner := CmdLink{
@@ -77,7 +77,7 @@ func main() {
 		}
 		err := cmdLinkRunner.Run()
 		if err != nil {
-			logger.Fatal("Command failed.\n", FmtErrors(err))
+			logger.Fatal("Command failed.\n", common.FmtErrors(err))
 		}
 	case "commit":
 		cmdCommitRunner := CmdCommit{
@@ -86,7 +86,7 @@ func main() {
 		}
 		err := cmdCommitRunner.Run()
 		if err != nil {
-			logger.Fatal("Command failed.\n", FmtErrors(err))
+			logger.Fatal("Command failed.\n", common.FmtErrors(err))
 		}
 	default:
 		logger.Fatalf("Unsupported command: '%s':", cmd)
