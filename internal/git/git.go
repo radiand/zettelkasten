@@ -20,11 +20,11 @@ type FileChanges struct {
 
 // Any returns true if at least one file has been changed.
 func (fc *FileChanges) Any() bool {
-	a := fc.Added == 0
-	c := fc.Copied == 0
-	d := fc.Deleted == 0
-	m := fc.Modified == 0
-	r := fc.Renamed == 0
+	a := fc.Added != 0
+	c := fc.Copied != 0
+	d := fc.Deleted != 0
+	m := fc.Modified != 0
+	r := fc.Renamed != 0
 	if a || c || d || m || r {
 		return true
 	}
