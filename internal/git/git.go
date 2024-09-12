@@ -135,6 +135,25 @@ func (instance *ShellGit) Stat(staged bool) (FileChanges, error) {
 	return changes, nil
 }
 
+// Status obtains git statuses of all paths in working directory. Note: this is
+// "just enough" implementation and does not support many operations that could
+// be performed in git repo.
+func (instance *ShellGit) Status() ([]FileStatus, error) {
+	cmd := exec.Command(
+		"git",
+		"-C",
+		instance.WorktreePath,
+		"status",
+		"--porcelain=1",
+	)
+	out, err := cmd.Output()
+	if err != nil {
+		return []FileStatus{}, errors.Join(err, errors.New("git status failed"))
+	}
+	statuses, err := readGitStatusPorcelain(out)
+	return statuses, err
+}
+
 func fmtExitError(err error) string {
 	if exitErr, ok := err.(*exec.ExitError); ok {
 		if len(exitErr.Stderr) > 0 {
