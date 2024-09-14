@@ -16,8 +16,3 @@ func ModificationTime(path string) (time.Time, error) {
 	}
 	return fstat.ModTime(), nil
 }
-
-// Delta returns duration in seconds.
-func Delta(before, after time.Time) int64 {
-	return int64(after.Sub(before).Abs().Seconds())
-}

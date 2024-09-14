@@ -111,13 +111,15 @@ func TestCommitOldEnough(t *testing.T) {
 		"/virtual/zettelkasten/old.txt": t0,
 		"/virtual/zettelkasten/new.txt": t0.Add(time.Second * 60),
 	}
+
+	cooldown, _ := time.ParseDuration("60s")
 	cmdCommit := CmdCommit{
 		rootDir:         "/virtual",
 		zettelkastenDir: "/virtual/zettelkasten",
 		git:             &gitMock,
 		nowtime:         testutils.Then(t0.Add(time.Second * 61)),
 		modtime:         testutils.TimeOfPath(pathModTimes),
-		cooldown:    60,
+		cooldown:        cooldown,
 	}
 
 	// WHEN

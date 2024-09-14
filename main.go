@@ -101,7 +101,7 @@ func main() {
 			git:             &git.ShellGit{WorktreePath: rootDir},
 			nowtime:         common.Now,
 			modtime:         common.ModificationTime,
-			cooldown:        int64(cooldown.Seconds()),
+			cooldown:        cooldown,
 		}
 		err = cmdCommitRunner.Run()
 		if err != nil {

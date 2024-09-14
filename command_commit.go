@@ -7,7 +7,6 @@ import "time"
 import "path"
 
 import "github.com/radiand/zettelkasten/internal/git"
-import "github.com/radiand/zettelkasten/internal/common"
 
 // CmdCommit carries required params to run command.
 type CmdCommit struct {
@@ -16,7 +15,7 @@ type CmdCommit struct {
 	git             git.IGit
 	nowtime         func() time.Time
 	modtime         func(path string) (time.Time, error)
-	cooldown        int64
+	cooldown        time.Duration
 }
 
 // Run performs git commit with all changes that happened in RootDir directory.
@@ -71,7 +70,7 @@ func (cmd CmdCommit) filterPathsStillInCooldown() ([]string, error) {
 		if err != nil {
 			return []string{}, errors.Join(err, fmt.Errorf("Could not get mod time of path %s", path))
 		}
-		if common.Delta(modtime, now) <= cmd.cooldown {
+		if now.Sub(modtime) <= cmd.cooldown {
 			paths = append(paths, status.Path)
 		}
 	}
