@@ -7,22 +7,17 @@ import "github.com/radiand/zettelkasten/internal/git"
 import "github.com/radiand/zettelkasten/internal/testutils"
 import "github.com/stretchr/testify/assert"
 
-type Called[T any] struct {
-	WasCalled  bool
-	CalledWith T
-}
-
 type GitMock struct {
 	statusReturns testutils.Cycle[[]git.FileStatus]
-	addCapture    Called[[]string]
-	commitCapture Called[string]
+	addCapture    testutils.Capture[[]string]
+	commitCapture testutils.Capture[string]
 }
 
 func NewGitMock() GitMock {
 	return GitMock{
 		statusReturns: testutils.NewCycle[[]git.FileStatus](),
-		addCapture:    Called[[]string]{},
-		commitCapture: Called[string]{
+		addCapture:    testutils.Capture[[]string]{},
+		commitCapture: testutils.Capture[string]{
 			WasCalled:  false,
 			CalledWith: "",
 		},
