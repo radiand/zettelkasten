@@ -33,7 +33,6 @@ func main() {
 		true,
 		"If true, print new note to stdout, otherwise save to file.",
 	)
-	cmdNew.BoolVar(&cmdNewFlagStdout, "s", true, "(shorthand for --stdout)")
 
 	// Parse global flags.
 	flag.Parse()
