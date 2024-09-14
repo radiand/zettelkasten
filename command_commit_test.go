@@ -117,7 +117,7 @@ func TestCommitOldEnough(t *testing.T) {
 		git:             &gitMock,
 		nowtime:         testutils.Then(t0.Add(time.Second * 61)),
 		modtime:         testutils.TimeOfPath(pathModTimes),
-		olderThanSec:    60,
+		cooldown:    60,
 	}
 
 	// WHEN

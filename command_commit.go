@@ -16,13 +16,13 @@ type CmdCommit struct {
 	git             git.IGit
 	nowtime         func() time.Time
 	modtime         func(path string) (time.Time, error)
-	olderThanSec    int64
+	cooldown        int64
 }
 
 // Run performs git commit with all changes that happened in RootDir directory.
 func (cmd CmdCommit) Run() error {
 	var addErr error
-	if cmd.olderThanSec > 0 {
+	if cmd.cooldown > 0 {
 		pathsToIgnore, err := cmd.filterPathsStillInCooldown()
 		if err != nil {
 			return err
@@ -71,7 +71,7 @@ func (cmd CmdCommit) filterPathsStillInCooldown() ([]string, error) {
 		if err != nil {
 			return []string{}, errors.Join(err, fmt.Errorf("Could not get mod time of path %s", path))
 		}
-		if common.Delta(modtime, now) <= cmd.olderThanSec {
+		if common.Delta(modtime, now) <= cmd.cooldown {
 			paths = append(paths, status.Path)
 		}
 	}
