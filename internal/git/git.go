@@ -6,7 +6,6 @@ package git
 import "errors"
 import "fmt"
 import "os/exec"
-import "strings"
 
 // IGit interface provides version control functionalities with git.
 type IGit interface {
@@ -22,9 +21,9 @@ type ShellGit struct {
 
 // Add performs file staging.
 func (instance *ShellGit) Add(paths ...string) error {
-	cmd := exec.Command(
-		"git", "-C", instance.WorktreePath, "add", strings.Join(paths, " "),
-	)
+	args := []string{"-C", instance.WorktreePath, "add"}
+	args = append(args, paths...)
+	cmd := exec.Command("git", args...)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return errors.Join(err, fmt.Errorf("git add failed due to: %s", string(out)))

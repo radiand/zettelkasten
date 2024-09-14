@@ -11,6 +11,7 @@ import "github.com/radiand/zettelkasten/internal/common"
 
 // CmdCommit carries required params to run command.
 type CmdCommit struct {
+	rootDir         string
 	zettelkastenDir string
 	git             git.IGit
 	nowtime         func() time.Time
@@ -22,11 +23,13 @@ type CmdCommit struct {
 func (cmd CmdCommit) Run() error {
 	var addErr error
 	if cmd.olderThanSec > 0 {
-		pathsOldEnough, err := cmd.filterOldEnoughPaths()
+		pathsToIgnore, err := cmd.filterPathsStillInCooldown()
 		if err != nil {
 			return err
 		}
-		addErr = cmd.git.Add(pathsOldEnough...)
+		pathsToIgnore = wrapWithIgnore(pathsToIgnore)
+		pathsPassedToAdd := append([]string{cmd.zettelkastenDir}, pathsToIgnore...)
+		addErr = cmd.git.Add(pathsPassedToAdd...)
 	} else {
 		addErr = cmd.git.Add(cmd.zettelkastenDir)
 	}
@@ -54,7 +57,7 @@ func (cmd CmdCommit) Run() error {
 	return nil
 }
 
-func (cmd CmdCommit) filterOldEnoughPaths() ([]string, error) {
+func (cmd CmdCommit) filterPathsStillInCooldown() ([]string, error) {
 	statuses, err := cmd.git.Status()
 	if err != nil {
 		return []string{}, errors.Join(err, errors.New("Could not obtain git status"))
@@ -63,16 +66,24 @@ func (cmd CmdCommit) filterOldEnoughPaths() ([]string, error) {
 	paths := []string{}
 	now := cmd.nowtime()
 	for _, status := range statuses {
-		path := path.Join(cmd.zettelkastenDir, status.Path)
+		path := path.Join(cmd.rootDir, status.Path)
 		modtime, err := cmd.modtime(path)
 		if err != nil {
 			return []string{}, errors.Join(err, fmt.Errorf("Could not get mod time of path %s", path))
 		}
-		if common.Delta(modtime, now) > cmd.olderThanSec {
-			paths = append(paths, path)
+		if common.Delta(modtime, now) <= cmd.olderThanSec {
+			paths = append(paths, status.Path)
 		}
 	}
 	return paths, nil
+}
+
+func wrapWithIgnore(paths []string) []string {
+	wrapped := []string{}
+	for _, path := range paths {
+		wrapped = append(wrapped, ":!"+path)
+	}
+	return wrapped
 }
 
 func composeCommitMessage(changes aggregation) string {

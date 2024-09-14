@@ -6,6 +6,7 @@ package main
 import "flag"
 import "log"
 import "os"
+import "time"
 
 import "github.com/radiand/zettelkasten/internal/common"
 import "github.com/radiand/zettelkasten/internal/git"
@@ -34,6 +35,15 @@ func main() {
 		"If true, print new note to stdout, otherwise save to file.",
 	)
 
+	cmdCommit := flag.NewFlagSet("commit", flag.ExitOnError)
+	var cmdCommitFlagCooldown string
+	cmdCommit.StringVar(
+		&cmdCommitFlagCooldown,
+		"cooldown",
+		"0s",
+		"Setup how much time has to pass to allow commiting a file.",
+	)
+
 	// Parse global flags.
 	flag.Parse()
 
@@ -49,6 +59,7 @@ func main() {
 		logger.Fatal("Cannot get config.\n", common.FmtErrors(err))
 	}
 
+	rootDir := common.ExpandHomeDir(config.RootDir)
 	zettelkastenDir := common.ExpandHomeDir(config.ZettelkastenDir)
 
 	switch cmd {
@@ -79,14 +90,20 @@ func main() {
 			logger.Fatal("Command failed.\n", common.FmtErrors(err))
 		}
 	case "commit":
+		cmdCommit.Parse(args)
+		cooldown, err := time.ParseDuration(cmdCommitFlagCooldown)
+		if err != nil {
+			logger.Fatal("Invalid cooldown.\n", common.FmtErrors(err))
+		}
 		cmdCommitRunner := CmdCommit{
+			rootDir:         rootDir,
 			zettelkastenDir: zettelkastenDir,
-			git:             &git.ShellGit{WorktreePath: zettelkastenDir},
+			git:             &git.ShellGit{WorktreePath: rootDir},
 			nowtime:         common.Now,
 			modtime:         common.ModificationTime,
-			olderThanSec:    0,
+			olderThanSec:    int64(cooldown.Seconds()),
 		}
-		err := cmdCommitRunner.Run()
+		err = cmdCommitRunner.Run()
 		if err != nil {
 			logger.Fatal("Command failed.\n", common.FmtErrors(err))
 		}

@@ -93,26 +93,27 @@ func TestCommitOldEnough(t *testing.T) {
 	// First git.Status call is before git.Add, so all paths are unstaged now.
 	gitMock.statusReturns.Enqueue(
 		[]git.FileStatus{
-			{Path: "old.txt", Staged: git.Unmodified, Unstaged: git.Modified},
-			{Path: "new.txt", Staged: git.Unmodified, Unstaged: git.Modified},
+			{Path: "zettelkasten/old.txt", Staged: git.Unmodified, Unstaged: git.Modified},
+			{Path: "zettelkasten/new.txt", Staged: git.Unmodified, Unstaged: git.Modified},
 		},
 	)
 
 	// Second git.Status call is after git.Add.
 	gitMock.statusReturns.Enqueue(
 		[]git.FileStatus{
-			{Path: "old.txt", Staged: git.Modified, Unstaged: git.Unmodified},
-			{Path: "new.txt", Staged: git.Unmodified, Unstaged: git.Modified},
+			{Path: "zettelkasten/old.txt", Staged: git.Modified, Unstaged: git.Unmodified},
+			{Path: "zettelkasten/new.txt", Staged: git.Unmodified, Unstaged: git.Modified},
 		},
 	)
 
 	t0 := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
 	pathModTimes := map[string]time.Time{
-		"/virtual/old.txt": t0,
-		"/virtual/new.txt": t0.Add(time.Second * 60),
+		"/virtual/zettelkasten/old.txt": t0,
+		"/virtual/zettelkasten/new.txt": t0.Add(time.Second * 60),
 	}
 	cmdCommit := CmdCommit{
-		zettelkastenDir: "/virtual",
+		rootDir:         "/virtual",
+		zettelkastenDir: "/virtual/zettelkasten",
 		git:             &gitMock,
 		nowtime:         testutils.Then(t0.Add(time.Second * 61)),
 		modtime:         testutils.TimeOfPath(pathModTimes),
@@ -124,6 +125,6 @@ func TestCommitOldEnough(t *testing.T) {
 
 	// THEN
 	assert.Nil(t, err)
-	assert.Equal(t, []string{"/virtual/old.txt"}, gitMock.addCapture.CalledWith)
+	assert.Equal(t, []string{"/virtual/zettelkasten", ":!zettelkasten/new.txt"}, gitMock.addCapture.CalledWith)
 	assert.Equal(t, "auto: 1 modified", gitMock.commitCapture.CalledWith)
 }
