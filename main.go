@@ -83,6 +83,9 @@ func main() {
 		cmdCommitRunner := CmdCommit{
 			zettelkastenDir: zettelkastenDir,
 			git:             &git.ShellGit{WorktreePath: zettelkastenDir},
+			nowtime:         common.Now,
+			modtime:         common.ModificationTime,
+			olderThanSec:    0,
 		}
 		err := cmdCommitRunner.Run()
 		if err != nil {
