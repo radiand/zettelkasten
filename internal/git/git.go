@@ -12,6 +12,7 @@ type IGit interface {
 	Add(paths ...string) error
 	Commit(message string) error
 	Status() ([]FileStatus, error)
+	RootDir() (string, error)
 }
 
 // ShellGit is a Git interface implementation based on spawning shell process.
@@ -63,6 +64,24 @@ func (instance *ShellGit) Status() ([]FileStatus, error) {
 	}
 	statuses, err := readGitStatusPorcelain(out)
 	return statuses, err
+}
+
+// RootDir returns absolute path of repository root (typically where .git
+// folder resides). Root directory can be used to join with paths from Status()
+// to obtain absolute paths of files listed there.
+func (instance *ShellGit) RootDir() (string, error) {
+	cmd := exec.Command(
+		"git",
+		"-C",
+		instance.WorktreePath,
+		"rev-parse",
+		"--show-toplevel",
+	)
+	out, err := cmd.Output()
+	if err != nil {
+		return "", errors.Join(err, errors.New("git rev-parse failed"))
+	}
+	return string(out), nil
 }
 
 func fmtExitError(err error) string {

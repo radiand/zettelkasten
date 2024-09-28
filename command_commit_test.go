@@ -11,6 +11,10 @@ type GitMock struct {
 	statusReturns testutils.Cycle[[]git.FileStatus]
 	addCapture    testutils.Capture[[]string]
 	commitCapture testutils.Capture[string]
+	statusReturns  testutils.Cycle[[]git.FileStatus]
+	addCapture     testutils.Capture[[]string]
+	commitCapture  testutils.Capture[string]
+	rootDirReturns string
 }
 
 func NewGitMock() GitMock {
@@ -21,6 +25,7 @@ func NewGitMock() GitMock {
 			WasCalled:  false,
 			CalledWith: "",
 		},
+		rootDirReturns: "/root",
 	}
 }
 
@@ -40,6 +45,10 @@ func (self *GitMock) Commit(message string) error {
 
 func (self *GitMock) Status() ([]git.FileStatus, error) {
 	return self.statusReturns.Next(), nil
+}
+
+func (self *GitMock) RootDir() (string, error) {
+	return self.rootDirReturns, nil
 }
 
 func TestCommitWhenNoChanges(t *testing.T) {
@@ -89,6 +98,7 @@ func TestCommitChanges(t *testing.T) {
 func TestCommitOldEnough(t *testing.T) {
 	// GIVEN
 	gitMock := NewGitMock()
+	gitMock.rootDirReturns = "/virtual"
 
 	// First git.Status call is before git.Add, so all paths are unstaged now.
 	gitMock.statusReturns.Enqueue(
