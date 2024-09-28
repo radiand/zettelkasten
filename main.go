@@ -98,11 +98,11 @@ func main() {
 			os.Exit(1)
 		}
 		cmdCommitRunner := CmdCommit{
-			zettelkastenDir: zettelkastenDir,
-			gitFactory:      gitFactory,
-			nowtime:         common.Now,
-			modtime:         common.ModificationTime,
-			cooldown:        cooldown,
+			dirs:       []string{zettelkastenDir},
+			gitFactory: gitFactory,
+			nowtime:    common.Now,
+			modtime:    common.ModificationTime,
+			cooldown:   cooldown,
 		}
 		err = cmdCommitRunner.Run()
 		if err != nil {

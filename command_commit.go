@@ -10,16 +10,16 @@ import "github.com/radiand/zettelkasten/internal/git"
 
 // CmdCommit carries required params to run command.
 type CmdCommit struct {
-	zettelkastenDir string
-	gitFactory      func(workdir string) git.IGit
-	nowtime         func() time.Time
-	modtime         func(path string) (time.Time, error)
-	cooldown        time.Duration
+	dirs       []string
+	gitFactory func(workdir string) git.IGit
+	nowtime    func() time.Time
+	modtime    func(path string) (time.Time, error)
+	cooldown   time.Duration
 }
 
 // Run performs git commit with all changes that happened in RootDir directory.
 func (cmd CmdCommit) Run() error {
-	for _, path := range []string{cmd.zettelkastenDir} {
+	for _, path := range cmd.dirs {
 		err := cmd.run(path)
 		if err != nil {
 			return err
