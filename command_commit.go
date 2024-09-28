@@ -10,7 +10,6 @@ import "github.com/radiand/zettelkasten/internal/git"
 
 // CmdCommit carries required params to run command.
 type CmdCommit struct {
-	rootDir         string
 	zettelkastenDir string
 	git             git.IGit
 	nowtime         func() time.Time
@@ -62,10 +61,15 @@ func (cmd CmdCommit) filterPathsStillInCooldown() ([]string, error) {
 		return []string{}, errors.Join(err, errors.New("Could not obtain git status"))
 	}
 
+	gitRootDir, err := cmd.git.RootDir()
+	if err != nil {
+		return []string{}, errors.Join(err, errors.New("Could not obtain root dir"))
+	}
+
 	paths := []string{}
 	now := cmd.nowtime()
 	for _, status := range statuses {
-		path := path.Join(cmd.rootDir, status.Path)
+		path := path.Join(gitRootDir, status.Path)
 		modtime, err := cmd.modtime(path)
 		if err != nil {
 			return []string{}, errors.Join(err, fmt.Errorf("Could not get mod time of path %s", path))

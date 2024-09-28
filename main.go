@@ -96,7 +96,6 @@ func main() {
 			os.Exit(1)
 		}
 		cmdCommitRunner := CmdCommit{
-			rootDir:         rootDir,
 			zettelkastenDir: zettelkastenDir,
 			git:             &git.ShellGit{WorktreePath: rootDir},
 			nowtime:         common.Now,

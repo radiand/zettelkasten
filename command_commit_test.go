@@ -8,9 +8,6 @@ import "github.com/radiand/zettelkasten/internal/testutils"
 import "github.com/stretchr/testify/assert"
 
 type GitMock struct {
-	statusReturns testutils.Cycle[[]git.FileStatus]
-	addCapture    testutils.Capture[[]string]
-	commitCapture testutils.Capture[string]
 	statusReturns  testutils.Cycle[[]git.FileStatus]
 	addCapture     testutils.Capture[[]string]
 	commitCapture  testutils.Capture[string]
@@ -124,7 +121,6 @@ func TestCommitOldEnough(t *testing.T) {
 
 	cooldown, _ := time.ParseDuration("60s")
 	cmdCommit := CmdCommit{
-		rootDir:         "/virtual",
 		zettelkastenDir: "/virtual/zettelkasten",
 		git:             &gitMock,
 		nowtime:         testutils.Then(t0.Add(time.Second * 61)),
