@@ -55,8 +55,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	rootDir := common.ExpandHomeDir(config.RootDir)
 	zettelkastenDir := common.ExpandHomeDir(config.ZettelkastenDir)
+	gitFactory := func(workdir string) git.IGit {
+		return &git.ShellGit{WorktreePath: workdir}
+	}
 
 	switch cmd {
 	case "new":
@@ -97,7 +99,7 @@ func main() {
 		}
 		cmdCommitRunner := CmdCommit{
 			zettelkastenDir: zettelkastenDir,
-			git:             &git.ShellGit{WorktreePath: rootDir},
+			gitFactory:      gitFactory,
 			nowtime:         common.Now,
 			modtime:         common.ModificationTime,
 			cooldown:        cooldown,

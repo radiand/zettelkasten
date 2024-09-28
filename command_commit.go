@@ -11,7 +11,7 @@ import "github.com/radiand/zettelkasten/internal/git"
 // CmdCommit carries required params to run command.
 type CmdCommit struct {
 	zettelkastenDir string
-	git             git.IGit
+	gitFactory      func(workdir string) git.IGit
 	nowtime         func() time.Time
 	modtime         func(path string) (time.Time, error)
 	cooldown        time.Duration
@@ -19,24 +19,35 @@ type CmdCommit struct {
 
 // Run performs git commit with all changes that happened in RootDir directory.
 func (cmd CmdCommit) Run() error {
+	for _, path := range []string{cmd.zettelkastenDir} {
+		err := cmd.run(path)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (cmd CmdCommit) run(workdir string) error {
+	gitHandler := cmd.gitFactory(workdir)
 	var addErr error
 	if cmd.cooldown > 0 {
-		pathsToIgnore, err := cmd.filterPathsStillInCooldown()
+		pathsToIgnore, err := cmd.filterPathsStillInCooldown(workdir)
 		if err != nil {
 			return err
 		}
 		pathsToIgnore = wrapWithIgnore(pathsToIgnore)
-		pathsPassedToAdd := append([]string{cmd.zettelkastenDir}, pathsToIgnore...)
-		addErr = cmd.git.Add(pathsPassedToAdd...)
+		pathsPassedToAdd := append([]string{workdir}, pathsToIgnore...)
+		addErr = gitHandler.Add(pathsPassedToAdd...)
 	} else {
-		addErr = cmd.git.Add(cmd.zettelkastenDir)
+		addErr = gitHandler.Add(workdir)
 	}
 
 	if addErr != nil {
 		return addErr
 	}
 
-	statuses, err := cmd.git.Status()
+	statuses, err := gitHandler.Status()
 	if err != nil {
 		return errors.Join(err, errors.New("Could not obtain git status"))
 	}
@@ -48,20 +59,21 @@ func (cmd CmdCommit) Run() error {
 
 	commitMsg := composeCommitMessage(aggregated)
 
-	err = cmd.git.Commit(commitMsg)
+	err = gitHandler.Commit(commitMsg)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (cmd CmdCommit) filterPathsStillInCooldown() ([]string, error) {
-	statuses, err := cmd.git.Status()
+func (cmd CmdCommit) filterPathsStillInCooldown(workdir string) ([]string, error) {
+	gitHandler := cmd.gitFactory(workdir)
+	statuses, err := gitHandler.Status()
 	if err != nil {
 		return []string{}, errors.Join(err, errors.New("Could not obtain git status"))
 	}
 
-	gitRootDir, err := cmd.git.RootDir()
+	gitRootDir, err := gitHandler.RootDir()
 	if err != nil {
 		return []string{}, errors.Join(err, errors.New("Could not obtain root dir"))
 	}

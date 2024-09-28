@@ -55,7 +55,7 @@ func TestCommitWhenNoChanges(t *testing.T) {
 
 	cmdCommit := CmdCommit{
 		zettelkastenDir: "/tmp", // Does not matter.
-		git:             &gitMock,
+		gitFactory:      func(string) git.IGit { return &gitMock },
 	}
 
 	// WHEN
@@ -80,7 +80,7 @@ func TestCommitChanges(t *testing.T) {
 
 	cmdCommit := CmdCommit{
 		zettelkastenDir: "/tmp", // Does not matter.
-		git:             &gitMock,
+		gitFactory:      func(string) git.IGit { return &gitMock },
 	}
 
 	// WHEN
@@ -122,7 +122,7 @@ func TestCommitOldEnough(t *testing.T) {
 	cooldown, _ := time.ParseDuration("60s")
 	cmdCommit := CmdCommit{
 		zettelkastenDir: "/virtual/zettelkasten",
-		git:             &gitMock,
+		gitFactory:      func(string) git.IGit { return &gitMock },
 		nowtime:         testutils.Then(t0.Add(time.Second * 61)),
 		modtime:         testutils.TimeOfPath(pathModTimes),
 		cooldown:        cooldown,
