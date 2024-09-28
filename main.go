@@ -4,18 +4,12 @@ Zettelkasten - plain text notes with toml metadata
 package main
 
 import "flag"
-import "log"
 import "os"
 import "time"
+import "fmt"
 
 import "github.com/radiand/zettelkasten/internal/common"
 import "github.com/radiand/zettelkasten/internal/git"
-
-var logger *log.Logger
-
-func init() {
-	logger = log.New(os.Stderr, "", 0)
-}
 
 func main() {
 	// Global flags.
@@ -50,13 +44,15 @@ func main() {
 	// Parse subcommand flags.
 	args := flag.Args()
 	if len(args) == 0 {
-		log.Fatal("Please specify a subcommand.")
+		fmt.Fprintln(os.Stderr, "Please specify a subcommand.")
+		os.Exit(1)
 	}
 	cmd, args := args[0], args[1:]
 
 	config, err := GetConfigFromFile(common.ExpandHomeDir(*flagConfigPath))
 	if err != nil {
-		logger.Fatal("Cannot get config.\n", common.FmtErrors(err))
+		fmt.Fprintln(os.Stderr, "Cannot get config.\n", common.FmtErrors(err))
+		os.Exit(1)
 	}
 
 	rootDir := common.ExpandHomeDir(config.RootDir)
@@ -71,7 +67,8 @@ func main() {
 		}
 		err := cmdNewRunner.Run()
 		if err != nil {
-			logger.Fatal("Command failed.\n", common.FmtErrors(err))
+			fmt.Fprintln(os.Stderr, "Command failed.\n", common.FmtErrors(err))
+			os.Exit(1)
 		}
 	case "health":
 		cmdHealthRunner := CmdHealth{
@@ -79,7 +76,8 @@ func main() {
 		}
 		err := cmdHealthRunner.Run()
 		if err != nil {
-			logger.Fatal("Command failed.\n", common.FmtErrors(err))
+			fmt.Fprintln(os.Stderr, "Command failed.\n", common.FmtErrors(err))
+			os.Exit(1)
 		}
 	case "link":
 		cmdLinkRunner := CmdLink{
@@ -87,13 +85,15 @@ func main() {
 		}
 		err := cmdLinkRunner.Run()
 		if err != nil {
-			logger.Fatal("Command failed.\n", common.FmtErrors(err))
+			fmt.Fprintln(os.Stderr, "Command failed.\n", common.FmtErrors(err))
+			os.Exit(1)
 		}
 	case "commit":
 		cmdCommit.Parse(args)
 		cooldown, err := time.ParseDuration(cmdCommitFlagCooldown)
 		if err != nil {
-			logger.Fatal("Invalid cooldown.\n", common.FmtErrors(err))
+			fmt.Fprintln(os.Stderr, "Invalid cooldown.\n", common.FmtErrors(err))
+			os.Exit(1)
 		}
 		cmdCommitRunner := CmdCommit{
 			rootDir:         rootDir,
@@ -105,9 +105,11 @@ func main() {
 		}
 		err = cmdCommitRunner.Run()
 		if err != nil {
-			logger.Fatal("Command failed.\n", common.FmtErrors(err))
+			fmt.Fprintln(os.Stderr, "Command failed.\n", common.FmtErrors(err))
+			os.Exit(1)
 		}
 	default:
-		logger.Fatalf("Unsupported command: '%s':", cmd)
+		fmt.Fprintf(os.Stderr, "Unsupported command: '%s'\n", cmd)
+		os.Exit(1)
 	}
 }
