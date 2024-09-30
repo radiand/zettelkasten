@@ -7,7 +7,6 @@ import "github.com/BurntSushi/toml"
 
 // Config represents global, application wide options.
 type Config struct {
-	RootDir         string `toml:"root_dir"`
 	ZettelkastenDir string `toml:"zettelkasten_dir"`
 }
 
