@@ -50,6 +50,19 @@ func main() {
 	}
 	cmd, args := args[0], args[1:]
 
+	if cmd == "init" {
+		cmdInitRunner := CmdInit{
+			configPath: *flagConfigPath,
+			notesDir:   "~/vault/zettelkasten/notes",
+		}
+		err := cmdInitRunner.Run()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Command failed.\n", common.FmtErrors(err))
+			os.Exit(1)
+		}
+		os.Exit(0)
+	}
+
 	config, err := config.GetConfigFromFile(common.ExpandHomeDir(*flagConfigPath))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Cannot get config.\n", common.FmtErrors(err))
