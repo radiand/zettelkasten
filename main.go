@@ -9,6 +9,7 @@ import "time"
 import "fmt"
 
 import "github.com/radiand/zettelkasten/internal/common"
+import "github.com/radiand/zettelkasten/internal/config"
 import "github.com/radiand/zettelkasten/internal/git"
 
 func main() {
@@ -49,7 +50,7 @@ func main() {
 	}
 	cmd, args := args[0], args[1:]
 
-	config, err := GetConfigFromFile(common.ExpandHomeDir(*flagConfigPath))
+	config, err := config.GetConfigFromFile(common.ExpandHomeDir(*flagConfigPath))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Cannot get config.\n", common.FmtErrors(err))
 		os.Exit(1)

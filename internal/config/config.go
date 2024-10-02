@@ -1,4 +1,4 @@
-package main
+package config
 
 import "errors"
 import "os"
@@ -31,4 +31,18 @@ func GetConfigFromFile(path string) (Config, error) {
 		return Config{}, errors.Join(marshalErr, errors.New("Cannot get config"))
 	}
 	return config, nil
+}
+
+// PutConfigToFile marshalls Config to file.
+func PutConfigToFile(path string, config Config) error {
+	content, err := toml.Marshal(config)
+	if err != nil {
+		return errors.Join(err, errors.New("Cannot marshall config"))
+	}
+
+	err = os.WriteFile(path, content, 0644)
+	if err != nil {
+		return errors.Join(err, errors.New("Cannot save config to file"))
+	}
+	return nil
 }
