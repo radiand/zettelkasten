@@ -1,5 +1,6 @@
 package common
 
+import "fmt"
 import "os"
 import "strings"
 
@@ -23,4 +24,13 @@ func Exists(path string) (bool, error) {
 		return false, nil
 	}
 	return false, err
+}
+
+// AskBool prompts for yes/no answer in console.
+func AskBool(prompt string) bool {
+	fmt.Printf("%s [y/N]: ", prompt)
+	var answer string
+	fmt.Scanln(&answer)
+	token := strings.ToLower(answer)
+	return token == "y" || token == "yes"
 }
