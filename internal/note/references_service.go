@@ -6,7 +6,7 @@ import "slices"
 
 // FindUids returns all Uids found in given text.
 func FindUids(text string) []string {
-	uidRe := getUidRegexp()
+	uidRe := GetUidRegexp()
 	return uidRe.FindAllString(text, -1)
 }
 

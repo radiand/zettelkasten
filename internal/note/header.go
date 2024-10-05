@@ -66,9 +66,9 @@ func NewHeader() Header {
 	}
 }
 
-// getUidRegexp creates regexp matching Note Uid, i.e. filenames and references
+// GetUidRegexp creates regexp matching Note Uid, i.e. filenames and references
 // of other Notes within Note's body.
-func getUidRegexp() *regexp.Regexp {
+func GetUidRegexp() *regexp.Regexp {
 	uidPat := `\d{4}\d{2}\d{2}T\d{2}\d{2}\d{2}Z`
 	return regexp.MustCompile(uidPat)
 }

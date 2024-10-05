@@ -39,6 +39,8 @@ func main() {
 		"Setup how much time has to pass to allow commiting a file.",
 	)
 
+	cmdGet := flag.NewFlagSet("config", flag.ExitOnError)
+
 	// Parse global flags.
 	flag.Parse()
 
@@ -119,6 +121,28 @@ func main() {
 			cooldown:   cooldown,
 		}
 		err = cmdCommitRunner.Run()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Command failed.\n", common.FmtErrors(err))
+			os.Exit(1)
+		}
+	case "get":
+		cmdGet.Parse(args)
+
+		hint := "Provide key from config or note UID."
+		if cmdGet.NArg() < 1 {
+			fmt.Fprintf(os.Stderr, "Argument required. %s\n", hint)
+			os.Exit(1)
+		}
+		if cmdGet.NArg() > 1 {
+			fmt.Fprintf(os.Stderr, "Too many arguments. %s\n", hint)
+			os.Exit(1)
+		}
+
+		cmdGetRunner := CmdGet{
+			configPath: *flagConfigPath,
+			query:      cmdGet.Arg(0),
+		}
+		err := cmdGetRunner.Run()
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Command failed.\n", common.FmtErrors(err))
 			os.Exit(1)
