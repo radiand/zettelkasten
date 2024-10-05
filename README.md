@@ -68,3 +68,26 @@ nvim $(zettelkasten new -stdout=false)
 
 You are encouraged to create an alias for this or create new mapping in (n)vim
 itself.
+
+# Philosophy
+
+- Note is a record of a thought, plan or goal. It may describe something you
+  have read, something you have seen or somewhere you have been to.
+- Note is written the way it _could_ be published.
+- You do not collect notes for just for data hoarding. You revisit, distill or
+  even remove notes.
+- You do not strive for hierarchy. You link notes.
+- To label notes, you use tags.
+- To create collections, you use indices. E.g. "books", "travel", "ideas".
+- Use plain text. It is searchable and it will last.
+- Your notes are **you**. Do not let corporations read your mind. Do not store
+  them anywhere outside your PC unless you can safely encrypt them. Do not trust
+  any online services.
+- Backup.
+
+# Workflow
+
+You can use any text editor, as long it can easily cooperate with `zettelkasten`
+binary, i.e. you are able to define key mappings to create and search notes. For
+`nvim` you can use:
+
