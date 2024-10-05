@@ -39,7 +39,7 @@ func main() {
 		"Setup how much time has to pass to allow commiting a file.",
 	)
 
-	cmdGet := flag.NewFlagSet("config", flag.ExitOnError)
+	cmdGet := flag.NewFlagSet("get", flag.ExitOnError)
 
 	// Parse global flags.
 	flag.Parse()
