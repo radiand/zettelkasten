@@ -26,7 +26,7 @@ func main() {
 	cmdNew.BoolVar(
 		&cmdNewFlagStdout,
 		"stdout",
-		true,
+		false,
 		"If true, print new note to stdout, otherwise save to file.",
 	)
 
