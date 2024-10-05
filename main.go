@@ -57,19 +57,12 @@ func main() {
 			configPath: *flagConfigPath,
 			notesDir:   "~/vault/zettelkasten/notes",
 		}
-		err := cmdInitRunner.Run()
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "Command failed.\n", common.FmtErrors(err))
-			os.Exit(1)
-		}
+		try(cmdInitRunner.Run(), "Command failed.")
 		os.Exit(0)
 	}
 
 	config, err := config.GetConfigFromFile(common.ExpandHomeDir(*flagConfigPath))
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Cannot get config.\n", common.FmtErrors(err))
-		os.Exit(1)
-	}
+	try(err, "Cannot get config.")
 
 	zettelkastenDir := common.ExpandHomeDir(config.ZettelkastenDir)
 	gitFactory := func(workdir string) git.IGit {
@@ -83,36 +76,21 @@ func main() {
 			zettelkastenDir: zettelkastenDir,
 			stdout:          cmdNewFlagStdout,
 		}
-		err := cmdNewRunner.Run()
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "Command failed.\n", common.FmtErrors(err))
-			os.Exit(1)
-		}
+		try(cmdNewRunner.Run(), "Command failed.")
 	case "health":
 		cmdHealthRunner := CmdHealth{
 			zettelkastenDir: zettelkastenDir,
 		}
-		err := cmdHealthRunner.Run()
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "Command failed.\n", common.FmtErrors(err))
-			os.Exit(1)
-		}
+		try(cmdHealthRunner.Run(), "Command failed.")
 	case "link":
 		cmdLinkRunner := CmdLink{
 			zettelkastenDir: zettelkastenDir,
 		}
-		err := cmdLinkRunner.Run()
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "Command failed.\n", common.FmtErrors(err))
-			os.Exit(1)
-		}
+		try(cmdLinkRunner.Run(), "Command failed.")
 	case "commit":
 		cmdCommit.Parse(args)
 		cooldown, err := time.ParseDuration(cmdCommitFlagCooldown)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "Invalid cooldown.\n", common.FmtErrors(err))
-			os.Exit(1)
-		}
+		try(err, "Invalid cooldown.")
 		cmdCommitRunner := CmdCommit{
 			dirs:       []string{zettelkastenDir},
 			gitFactory: gitFactory,
@@ -120,11 +98,7 @@ func main() {
 			modtime:    common.ModificationTime,
 			cooldown:   cooldown,
 		}
-		err = cmdCommitRunner.Run()
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "Command failed.\n", common.FmtErrors(err))
-			os.Exit(1)
-		}
+		try(cmdCommitRunner.Run(), "Command failed.")
 	case "get":
 		cmdGet.Parse(args)
 
@@ -142,13 +116,16 @@ func main() {
 			configPath: *flagConfigPath,
 			query:      cmdGet.Arg(0),
 		}
-		err := cmdGetRunner.Run()
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "Command failed.\n", common.FmtErrors(err))
-			os.Exit(1)
-		}
+		try(cmdGetRunner.Run(), "Command failed.")
 	default:
 		fmt.Fprintf(os.Stderr, "Unsupported command: '%s'\n", cmd)
+		os.Exit(1)
+	}
+}
+
+func try(err error, message string) {
+	if err != nil {
+		fmt.Fprintln(os.Stderr, message+"\n", common.FmtErrors(err))
 		os.Exit(1)
 	}
 }
