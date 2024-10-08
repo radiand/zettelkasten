@@ -108,7 +108,7 @@ func parseGlobalArgs() globalArgs {
 	return globalArgs{configPath: *configPath, subcommand: cmd, subArgs: args}
 }
 
-func parseCmdNew (args []string) cmdNewArgs {
+func parseCmdNew(args []string) cmdNewArgs {
 	flagset := flag.NewFlagSet("new", flag.ExitOnError)
 	stdout := flagset.Bool(
 		"stdout",
@@ -179,6 +179,7 @@ func main() {
 		cmdInitRunner := CmdInit{
 			configPath: globalArgs.configPath,
 			notesDir:   "~/vault/zettelkasten/notes",
+			indexDir:   "~/vault/zettelkasten/index",
 		}
 		try(cmdInitRunner.Run(), "Command failed.")
 		os.Exit(0)
@@ -213,9 +214,16 @@ func main() {
 		}
 		try(cmdLinkRunner.Run(), "Command failed.")
 	case "commit":
+		trackedDirectories := []string{zettelkastenDir}
+		isIndexDirSet := len(config.IndexDir) != 0
+		if isIndexDirSet {
+			trackedDirectories = append(
+				trackedDirectories, common.ExpandHomeDir(config.IndexDir),
+			)
+		}
 		parsedArgs := parseCmdCommit(globalArgs.subArgs)
 		cmdCommitRunner := CmdCommit{
-			dirs:       []string{zettelkastenDir},
+			dirs:       trackedDirectories,
 			gitFactory: gitFactory,
 			nowtime:    common.Now,
 			modtime:    common.ModificationTime,

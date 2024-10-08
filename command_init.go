@@ -11,6 +11,7 @@ import "github.com/radiand/zettelkasten/internal/config"
 type CmdInit struct {
 	configPath string
 	notesDir   string
+	indexDir   string
 }
 
 // Run performs initialization command.
@@ -19,15 +20,19 @@ func (self *CmdInit) Run() error {
 	isConfigFile, _ := common.Exists(expandedConfigPath)
 
 	var expandedNotesDir string
+	var expandedIndexDir string
 
 	if !isConfigFile {
 		expandedNotesDir = common.ExpandHomeDir(self.notesDir)
+		expandedIndexDir = common.ExpandHomeDir(self.indexDir)
 	} else {
 		configObj, _ := config.GetConfigFromFile(expandedConfigPath)
 		expandedNotesDir = common.ExpandHomeDir(configObj.ZettelkastenDir)
+		expandedIndexDir = common.ExpandHomeDir(configObj.IndexDir)
 	}
 
 	isNotesDir, _ := common.Exists(expandedNotesDir)
+	isIndexDir, _ := common.Exists(expandedIndexDir)
 
 	if !isConfigFile {
 		fmt.Printf("Creating config at %s. ", expandedConfigPath)
@@ -35,7 +40,7 @@ func (self *CmdInit) Run() error {
 		if accepted {
 			config.PutConfigToFile(
 				expandedConfigPath,
-				config.Config{ZettelkastenDir: expandedNotesDir},
+				config.Config{ZettelkastenDir: expandedNotesDir, IndexDir: expandedIndexDir},
 			)
 		}
 	}
@@ -45,6 +50,14 @@ func (self *CmdInit) Run() error {
 		accepted := common.AskBool("Proceed?")
 		if accepted {
 			os.MkdirAll(expandedNotesDir, 0744)
+		}
+	}
+
+	if !isIndexDir {
+		fmt.Printf("Creating index dir at %s. ", expandedIndexDir)
+		accepted := common.AskBool("Proceed?")
+		if accepted {
+			os.MkdirAll(expandedIndexDir, 0744)
 		}
 	}
 
