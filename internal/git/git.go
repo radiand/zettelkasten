@@ -6,6 +6,7 @@ package git
 import "errors"
 import "fmt"
 import "os/exec"
+import "strings"
 
 // IGit interface provides version control functionalities with git.
 type IGit interface {
@@ -81,7 +82,7 @@ func (instance *ShellGit) RootDir() (string, error) {
 	if err != nil {
 		return "", errors.Join(err, errors.New("git rev-parse failed"))
 	}
-	return string(out), nil
+	return strings.TrimSpace(string(out)), nil
 }
 
 func fmtExitError(err error) string {
