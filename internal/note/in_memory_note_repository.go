@@ -7,20 +7,20 @@ type InMemoryNoteRepository struct {
 }
 
 // Get obtains Note.
-func (repo *InMemoryNoteRepository) Get(uid string) (Note, error) {
-	return repo.notes[uid], nil
+func (self *InMemoryNoteRepository) Get(uid string) (Note, error) {
+	return self.notes[uid], nil
 }
 
 // Put saves Note.
-func (repo *InMemoryNoteRepository) Put(note Note) error {
-	repo.notes[note.Header.Uid] = note
+func (self *InMemoryNoteRepository) Put(note Note) error {
+	self.notes[note.Header.Uid] = note
 	return nil
 }
 
 // List obtains array of saved Notes' Uids.
-func (repo *InMemoryNoteRepository) List() ([]string, error) {
+func (self *InMemoryNoteRepository) List() ([]string, error) {
 	keys := []string{}
-	for k := range repo.notes {
+	for k := range self.notes {
 		keys = append(keys, k)
 	}
 	return keys, nil

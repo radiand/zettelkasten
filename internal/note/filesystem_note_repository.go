@@ -11,8 +11,8 @@ type FilesystemNoteRepository struct {
 }
 
 // Get obtains Note from disk.
-func (repo *FilesystemNoteRepository) Get(uid string) (Note, error) {
-	content, err := os.ReadFile(repo.getNotePath(uid))
+func (self *FilesystemNoteRepository) Get(uid string) (Note, error) {
+	content, err := os.ReadFile(self.getNotePath(uid))
 	if err != nil {
 		return Note{}, err
 	}
@@ -20,12 +20,12 @@ func (repo *FilesystemNoteRepository) Get(uid string) (Note, error) {
 }
 
 // Put saves Note to disk.
-func (repo *FilesystemNoteRepository) Put(note Note) error {
+func (self *FilesystemNoteRepository) Put(note Note) error {
 	marshalled, err := note.ToToml()
 	if err != nil {
 		return errors.Join(err, errors.New("Cannot marshall note"))
 	}
-	err = os.WriteFile(repo.getNotePath(note.Header.Uid), []byte(marshalled), 0644)
+	err = os.WriteFile(self.getNotePath(note.Header.Uid), []byte(marshalled), 0644)
 	if err != nil {
 		return errors.Join(err, errors.New("Cannot save note"))
 	}
@@ -33,8 +33,8 @@ func (repo *FilesystemNoteRepository) Put(note Note) error {
 }
 
 // List obtains array of saved Notes' Uids.
-func (repo *FilesystemNoteRepository) List() ([]string, error) {
-	notePaths, err := os.ReadDir(repo.RootDir)
+func (self *FilesystemNoteRepository) List() ([]string, error) {
+	notePaths, err := os.ReadDir(self.RootDir)
 	if err != nil {
 		return []string{}, errors.Join(err, errors.New("Cannot list notes"))
 	}

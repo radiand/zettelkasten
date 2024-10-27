@@ -11,8 +11,8 @@ type CmdHealth struct {
 }
 
 // Run tries to read all notes and checks if they can be correctly parsed.
-func (cmd *CmdHealth) Run() error {
-	repository := note.NewFilesystemNoteRepository(cmd.zettelkastenDir)
+func (self *CmdHealth) Run() error {
+	repository := note.NewFilesystemNoteRepository(self.zettelkastenDir)
 	uids, err := repository.List()
 	if err != nil {
 		return err

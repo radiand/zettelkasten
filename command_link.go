@@ -11,8 +11,8 @@ type CmdLink struct {
 
 // Run seeks for references between notes and updates their headers if there
 // are any.
-func (cmd *CmdLink) Run() error {
-	repository := note.NewFilesystemNoteRepository(cmd.zettelkastenDir)
+func (self *CmdLink) Run() error {
+	repository := note.NewFilesystemNoteRepository(self.zettelkastenDir)
 	err := note.LinkNotes(repository)
 	if err != nil {
 		return errors.Join(err, errors.New("CmdLink failed"))

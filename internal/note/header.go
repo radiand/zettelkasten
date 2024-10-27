@@ -32,8 +32,8 @@ func (lhs *Header) Equal(rhs Header) bool {
 }
 
 // ToToml marshalls Header.
-func (header *Header) ToToml() (res string, err error) {
-	marshalled, err := toml.Marshal(header)
+func (self *Header) ToToml() (res string, err error) {
+	marshalled, err := toml.Marshal(self)
 	if err != nil {
 		return "", err
 	}
@@ -41,14 +41,14 @@ func (header *Header) ToToml() (res string, err error) {
 }
 
 // Arrange enforces unified style of Headers. It modifies Header in place.
-func (header *Header) Arrange() {
+func (self *Header) Arrange() {
 	// All tags must be lowercase.
-	for i := 0; i < len(header.Tags); i++ {
-		header.Tags[i] = strings.ToLower(header.Tags[i])
+	for i := 0; i < len(self.Tags); i++ {
+		self.Tags[i] = strings.ToLower(self.Tags[i])
 	}
-	sort.Sort(sort.StringSlice(header.Tags))
-	sort.Sort(sort.StringSlice(header.ReferredFrom))
-	sort.Sort(sort.StringSlice(header.RefersTo))
+	sort.Sort(sort.StringSlice(self.Tags))
+	sort.Sort(sort.StringSlice(self.ReferredFrom))
+	sort.Sort(sort.StringSlice(self.RefersTo))
 }
 
 // NewHeader creates new Header, dated now.

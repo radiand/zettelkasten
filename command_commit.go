@@ -18,9 +18,9 @@ type CmdCommit struct {
 }
 
 // Run performs git commit with all changes that happened in RootDir directory.
-func (cmd CmdCommit) Run() error {
-	for _, path := range cmd.dirs {
-		err := cmd.run(path)
+func (self CmdCommit) Run() error {
+	for _, path := range self.dirs {
+		err := self.run(path)
 		if err != nil {
 			return err
 		}
@@ -28,11 +28,11 @@ func (cmd CmdCommit) Run() error {
 	return nil
 }
 
-func (cmd CmdCommit) run(workdir string) error {
-	gitHandler := cmd.gitFactory(workdir)
+func (self CmdCommit) run(workdir string) error {
+	gitHandler := self.gitFactory(workdir)
 	var addErr error
-	if cmd.cooldown > 0 {
-		pathsToIgnore, err := cmd.filterPathsStillInCooldown(workdir)
+	if self.cooldown > 0 {
+		pathsToIgnore, err := self.filterPathsStillInCooldown(workdir)
 		if err != nil {
 			return err
 		}
@@ -66,8 +66,8 @@ func (cmd CmdCommit) run(workdir string) error {
 	return nil
 }
 
-func (cmd CmdCommit) filterPathsStillInCooldown(workdir string) ([]string, error) {
-	gitHandler := cmd.gitFactory(workdir)
+func (self CmdCommit) filterPathsStillInCooldown(workdir string) ([]string, error) {
+	gitHandler := self.gitFactory(workdir)
 	statuses, err := gitHandler.Status()
 	if err != nil {
 		return []string{}, errors.Join(err, errors.New("Could not obtain git status"))
@@ -79,14 +79,14 @@ func (cmd CmdCommit) filterPathsStillInCooldown(workdir string) ([]string, error
 	}
 
 	paths := []string{}
-	now := cmd.nowtime()
+	now := self.nowtime()
 	for _, status := range statuses {
 		path := path.Join(gitRootDir, status.Path)
-		modtime, err := cmd.modtime(path)
+		modtime, err := self.modtime(path)
 		if err != nil {
 			return []string{}, errors.Join(err, fmt.Errorf("Could not get mod time of path %s", path))
 		}
-		if now.Sub(modtime) <= cmd.cooldown {
+		if now.Sub(modtime) <= self.cooldown {
 			paths = append(paths, status.Path)
 		}
 	}

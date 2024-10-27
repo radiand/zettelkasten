@@ -16,13 +16,13 @@ type CmdNew struct {
 // (default) or to file, printing only the path to created note. Printing just
 // paths can be useful to integrate this application with external text
 // editors.
-func (cmd *CmdNew) Run() error {
+func (self *CmdNew) Run() error {
 	note := note.NewNote()
 	marshaled, _ := note.ToToml()
-	if cmd.stdout {
+	if self.stdout {
 		fmt.Print(marshaled)
 	} else {
-		notePath := fmt.Sprintf("%s/%s.md", cmd.zettelkastenDir, note.Header.Uid)
+		notePath := fmt.Sprintf("%s/%s.md", self.zettelkastenDir, note.Header.Uid)
 		err := os.WriteFile(notePath, []byte(marshaled), 0644)
 		if err != nil {
 			return errors.Join(err, errors.New("Cannot save note"))

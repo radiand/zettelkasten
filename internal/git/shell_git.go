@@ -11,8 +11,8 @@ type ShellGit struct {
 }
 
 // Add performs file staging.
-func (instance *ShellGit) Add(paths ...string) error {
-	args := []string{"-C", instance.WorktreePath, "add"}
+func (self *ShellGit) Add(paths ...string) error {
+	args := []string{"-C", self.WorktreePath, "add"}
 	args = append(args, paths...)
 	cmd := exec.Command("git", args...)
 	out, err := cmd.CombinedOutput()
@@ -23,9 +23,9 @@ func (instance *ShellGit) Add(paths ...string) error {
 }
 
 // Commit performs git commit with custom message.
-func (instance *ShellGit) Commit(message string) error {
+func (self *ShellGit) Commit(message string) error {
 	cmd := exec.Command(
-		"git", "-C", instance.WorktreePath, "commit", "-m", message,
+		"git", "-C", self.WorktreePath, "commit", "-m", message,
 	)
 	err := cmd.Run()
 	if err != nil {
@@ -40,11 +40,11 @@ func (instance *ShellGit) Commit(message string) error {
 // Status obtains git statuses of all paths in working directory. Note: this is
 // "just enough" implementation and does not support many operations that could
 // be performed in git repo.
-func (instance *ShellGit) Status() ([]FileStatus, error) {
+func (self *ShellGit) Status() ([]FileStatus, error) {
 	cmd := exec.Command(
 		"git",
 		"-C",
-		instance.WorktreePath,
+		self.WorktreePath,
 		"status",
 		"--porcelain=1",
 	)
@@ -59,11 +59,11 @@ func (instance *ShellGit) Status() ([]FileStatus, error) {
 // RootDir returns absolute path of repository root (typically where .git
 // folder resides). Root directory can be used to join with paths from Status()
 // to obtain absolute paths of files listed there.
-func (instance *ShellGit) RootDir() (string, error) {
+func (self *ShellGit) RootDir() (string, error) {
 	cmd := exec.Command(
 		"git",
 		"-C",
-		instance.WorktreePath,
+		self.WorktreePath,
 		"rev-parse",
 		"--show-toplevel",
 	)
