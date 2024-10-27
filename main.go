@@ -20,7 +20,6 @@ var COMMANDS = map[string]string{
 	"link":   "Find link between notes and update headers.",
 	"get":    "Get key from config or note by UID.",
 	"commit": "Generate commit message and execute git commit.",
-	"health": "Perform health check.",
 }
 
 type globalArgs struct {
@@ -100,7 +99,7 @@ func parseGlobalArgs() globalArgs {
 
 	args := flag.Args()
 	if len(args) == 0 {
-		fmt.Fprintln(os.Stderr, "Please specify a subcommand. Available: new, health, link, commit.")
+		fmt.Fprintln(os.Stderr, "Please specify a subcommand. Available: new, link, commit.")
 		os.Exit(1)
 	}
 	cmd, args := args[0], args[1:]
@@ -165,12 +164,6 @@ func parseCmdLink(args []string) {
 	flagset.Parse(args)
 }
 
-func parseCmdHealth(args []string) {
-	flagset := flag.NewFlagSet("health", flag.ExitOnError)
-	flagset.Usage = func() { subcommandUsage("health", COMMANDS["health"]) }
-	flagset.Parse(args)
-}
-
 func main() {
 	globalArgs := parseGlobalArgs()
 
@@ -201,12 +194,6 @@ func main() {
 			stdout:          parsedArgs.stdout,
 		}
 		try(cmdNewRunner.Run(), "Command failed.")
-	case "health":
-		parseCmdHealth(globalArgs.subArgs)
-		cmdHealthRunner := CmdHealth{
-			zettelkastenDir: zettelkastenDir,
-		}
-		try(cmdHealthRunner.Run(), "Command failed.")
 	case "link":
 		parseCmdLink(globalArgs.subArgs)
 		cmdLinkRunner := CmdLink{
