@@ -7,51 +7,10 @@ import "github.com/radiand/zettelkasten/internal/git"
 import "github.com/radiand/zettelkasten/internal/testutils"
 import "github.com/stretchr/testify/assert"
 
-type GitMock struct {
-	statusReturns  testutils.Cycle[[]git.FileStatus]
-	addCapture     testutils.Capture[[]string]
-	commitCapture  testutils.Capture[string]
-	rootDirReturns string
-}
-
-func NewGitMock() GitMock {
-	return GitMock{
-		statusReturns: testutils.NewCycle[[]git.FileStatus](),
-		addCapture:    testutils.Capture[[]string]{},
-		commitCapture: testutils.Capture[string]{
-			WasCalled:  false,
-			CalledWith: "",
-		},
-		rootDirReturns: "/root",
-	}
-}
-
-func (self *GitMock) Add(paths ...string) error {
-	self.addCapture.WasCalled = true
-	for _, path := range paths {
-		self.addCapture.CalledWith = append(self.addCapture.CalledWith, path)
-	}
-	return nil
-}
-
-func (self *GitMock) Commit(message string) error {
-	self.commitCapture.WasCalled = true
-	self.commitCapture.CalledWith = message
-	return nil
-}
-
-func (self *GitMock) Status() ([]git.FileStatus, error) {
-	return self.statusReturns.Next(), nil
-}
-
-func (self *GitMock) RootDir() (string, error) {
-	return self.rootDirReturns, nil
-}
-
 func TestCommitWhenNoChanges(t *testing.T) {
 	// GIVEN
-	gitMock := NewGitMock()
-	gitMock.statusReturns.Enqueue([]git.FileStatus{})
+	gitMock := git.NewMockGit()
+	gitMock.StatusReturns.Enqueue([]git.FileStatus{})
 
 	cmdCommit := CmdCommit{
 		dirs:       []string{"/tmp"}, // Does not matter.
@@ -63,13 +22,13 @@ func TestCommitWhenNoChanges(t *testing.T) {
 
 	// THEN
 	assert.Nil(t, err)
-	assert.False(t, gitMock.commitCapture.WasCalled)
+	assert.False(t, gitMock.CommitCapture.WasCalled)
 }
 
 func TestCommitChanges(t *testing.T) {
 	// GIVEN
-	gitMock := NewGitMock()
-	gitMock.statusReturns.Enqueue(
+	gitMock := git.NewMockGit()
+	gitMock.StatusReturns.Enqueue(
 		[]git.FileStatus{
 			{Path: "/tmp/a1.txt", Staged: git.Added, Unstaged: git.Unmodified},
 			{Path: "/tmp/a2.txt", Staged: git.Added, Unstaged: git.Unmodified},
@@ -88,17 +47,17 @@ func TestCommitChanges(t *testing.T) {
 
 	// THEN
 	assert.Nil(t, err)
-	assert.True(t, gitMock.commitCapture.WasCalled)
-	assert.Equal(t, "auto: 2 added, 1 deleted, 1 modified", gitMock.commitCapture.CalledWith)
+	assert.True(t, gitMock.CommitCapture.WasCalled)
+	assert.Equal(t, "auto: 2 added, 1 deleted, 1 modified", gitMock.CommitCapture.CalledWith)
 }
 
 func TestCommitOldEnough(t *testing.T) {
 	// GIVEN
-	gitMock := NewGitMock()
-	gitMock.rootDirReturns = "/virtual"
+	gitMock := git.NewMockGit()
+	gitMock.RootDirReturns = "/virtual"
 
 	// First git.Status call is before git.Add, so all paths are unstaged now.
-	gitMock.statusReturns.Enqueue(
+	gitMock.StatusReturns.Enqueue(
 		[]git.FileStatus{
 			{Path: "zettelkasten/old.txt", Staged: git.Unmodified, Unstaged: git.Modified},
 			{Path: "zettelkasten/new.txt", Staged: git.Unmodified, Unstaged: git.Modified},
@@ -106,7 +65,7 @@ func TestCommitOldEnough(t *testing.T) {
 	)
 
 	// Second git.Status call is after git.Add.
-	gitMock.statusReturns.Enqueue(
+	gitMock.StatusReturns.Enqueue(
 		[]git.FileStatus{
 			{Path: "zettelkasten/old.txt", Staged: git.Modified, Unstaged: git.Unmodified},
 			{Path: "zettelkasten/new.txt", Staged: git.Unmodified, Unstaged: git.Modified},
@@ -133,6 +92,6 @@ func TestCommitOldEnough(t *testing.T) {
 
 	// THEN
 	assert.Nil(t, err)
-	assert.Equal(t, []string{"/virtual/zettelkasten", ":!zettelkasten/new.txt"}, gitMock.addCapture.CalledWith)
-	assert.Equal(t, "auto: 1 modified", gitMock.commitCapture.CalledWith)
+	assert.Equal(t, []string{"/virtual/zettelkasten", ":!zettelkasten/new.txt"}, gitMock.AddCapture.CalledWith)
+	assert.Equal(t, "auto: 1 modified", gitMock.CommitCapture.CalledWith)
 }
