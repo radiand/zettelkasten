@@ -7,8 +7,8 @@ import "github.com/BurntSushi/toml"
 
 // Config represents global, application wide options.
 type Config struct {
-	ZettelkastenDir string `toml:"zettelkasten_dir"`
-	IndexDir        string `toml:"index_dir"`
+	ZettelkastenDir  string `toml:"zettelkasten_dir"`
+	DefaultWorkspace string `toml:"default_workspace"`
 }
 
 // GetConfig unmarshalls Config from array of bytes.

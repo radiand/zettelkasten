@@ -12,9 +12,9 @@ func (self *InMemoryNoteRepository) Get(uid string) (Note, error) {
 }
 
 // Put saves Note.
-func (self *InMemoryNoteRepository) Put(note Note) error {
+func (self *InMemoryNoteRepository) Put(note Note) (string, error) {
 	self.notes[note.Header.Uid] = note
-	return nil
+	return note.Header.Uid + ".md", nil
 }
 
 // List obtains array of saved Notes' Uids.

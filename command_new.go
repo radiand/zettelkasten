@@ -1,33 +1,32 @@
 package main
 
-import "fmt"
-import "os"
 import "errors"
+import "fmt"
+import "path"
 
 import "github.com/radiand/zettelkasten/internal/note"
+import "github.com/radiand/zettelkasten/internal/workspaces"
 
 // CmdNew carries required params to run command.
 type CmdNew struct {
 	zettelkastenDir string
-	stdout  bool
+	workspaceName   string
 }
 
-// Run creates new note. It can be instructed to print new note to stdout
-// (default) or to file, printing only the path to created note. Printing just
-// paths can be useful to integrate this application with external text
-// editors.
+// Run creates new note file and prints its path to stdout.
 func (self *CmdNew) Run() error {
-	note := note.NewNote()
-	marshaled, _ := note.ToToml()
-	if self.stdout {
-		fmt.Print(marshaled)
-	} else {
-		notePath := fmt.Sprintf("%s/%s.md", self.zettelkastenDir, note.Header.Uid)
-		err := os.WriteFile(notePath, []byte(marshaled), 0644)
-		if err != nil {
-			return errors.Join(err, errors.New("Cannot save note"))
-		}
-		fmt.Println(notePath)
+	newNote := note.NewNote()
+	if ok, err := workspaces.IsOkay(self.zettelkastenDir, self.workspaceName); !ok {
+		return errors.Join(
+			err, errors.New("Cannot create note in invalid workspace. Consider initializing workspace before"),
+		)
 	}
+	destinationDirPath := path.Join(self.zettelkastenDir, self.workspaceName, workspaces.NotesDirName)
+	repo := note.NewFilesystemNoteRepository(destinationDirPath)
+	notePath, err := repo.Put(newNote)
+	if err != nil {
+		return errors.Join(err, errors.New("Cannot save note"))
+	}
+	fmt.Println(notePath)
 	return nil
 }

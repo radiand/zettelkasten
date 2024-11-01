@@ -36,8 +36,12 @@ type cmdGetArgs struct {
 	query string
 }
 
+type cmdInitArgs struct {
+	workspaceName string
+}
+
 type cmdNewArgs struct {
-	stdout bool
+	workspaceName string
 }
 
 func flagprint(lines []string) {
@@ -109,15 +113,19 @@ func parseGlobalArgs() globalArgs {
 
 func parseCmdNew(args []string) cmdNewArgs {
 	flagset := flag.NewFlagSet("new", flag.ExitOnError)
-	stdout := flagset.Bool(
-		"stdout",
-		false,
-		"If true, print new note to stdout, otherwise save to file.",
-	)
 	flagset.Usage = func() { subcommandUsageWithOptions(flagset, "new", COMMANDS["new"]) }
 	err := flagset.Parse(args)
 	try(err, "Invalid arguments")
-	return cmdNewArgs{stdout: *stdout}
+	hint := "Provide name of the workspace to create a new note in."
+	if flagset.NArg() > 1 {
+		fmt.Fprintf(os.Stderr, "Too many arguments. %s\n", hint)
+		os.Exit(1)
+	}
+	workspaceName := ""
+	if flagset.NArg() == 1 {
+		workspaceName = flagset.Arg(0)
+	}
+	return cmdNewArgs{workspaceName: workspaceName}
 }
 
 func parseCmdCommit(args []string) cmdCommitArgs {
@@ -152,10 +160,21 @@ func parseCmdGet(args []string) cmdGetArgs {
 	return cmdGetArgs{query: flagset.Arg(0)}
 }
 
-func parseCmdInit(args []string) {
+func parseCmdInit(args []string) cmdInitArgs {
 	flagset := flag.NewFlagSet("init", flag.ExitOnError)
 	flagset.Usage = func() { subcommandUsage("init", COMMANDS["init"]) }
-	flagset.Parse(args)
+	err := flagset.Parse(args)
+	try(err, "Invalid arguments")
+	hint := "Provide name for new workspace."
+	if flagset.NArg() > 1 {
+		fmt.Fprintf(os.Stderr, "Too many arguments. %s\n", hint)
+		os.Exit(1)
+	}
+	workspaceName := ""
+	if flagset.NArg() == 1 {
+		workspaceName = flagset.Arg(0)
+	}
+	return cmdInitArgs{workspaceName: workspaceName}
 }
 
 func parseCmdLink(args []string) {
@@ -168,11 +187,10 @@ func main() {
 	globalArgs := parseGlobalArgs()
 
 	if globalArgs.subcommand == "init" {
-		parseCmdInit(globalArgs.subArgs)
+		parsedArgs := parseCmdInit(globalArgs.subArgs)
 		cmdInitRunner := CmdInit{
-			configPath: globalArgs.configPath,
-			notesDir:   "~/vault/zettelkasten/notes",
-			indexDir:   "~/vault/zettelkasten/index",
+			configPath:    globalArgs.configPath,
+			workspaceName: parsedArgs.workspaceName,
 		}
 		try(cmdInitRunner.Run(), "Command failed.")
 		os.Exit(0)
@@ -189,9 +207,13 @@ func main() {
 	switch globalArgs.subcommand {
 	case "new":
 		parsedArgs := parseCmdNew(globalArgs.subArgs)
+		workspaceName := config.DefaultWorkspace
+		if parsedArgs.workspaceName != "" {
+			workspaceName = parsedArgs.workspaceName
+		}
 		cmdNewRunner := CmdNew{
 			zettelkastenDir: zettelkastenDir,
-			stdout:          parsedArgs.stdout,
+			workspaceName:   workspaceName,
 		}
 		try(cmdNewRunner.Run(), "Command failed.")
 	case "link":
@@ -202,12 +224,6 @@ func main() {
 		try(cmdLinkRunner.Run(), "Command failed.")
 	case "commit":
 		trackedDirectories := []string{zettelkastenDir}
-		isIndexDirSet := len(config.IndexDir) != 0
-		if isIndexDirSet {
-			trackedDirectories = append(
-				trackedDirectories, common.ExpandHomeDir(config.IndexDir),
-			)
-		}
 		parsedArgs := parseCmdCommit(globalArgs.subArgs)
 		cmdCommitRunner := CmdCommit{
 			dirs:       trackedDirectories,
