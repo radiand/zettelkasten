@@ -84,7 +84,7 @@ func LinkNotes(repository INoteRepository) error {
 			nt.Header.ReferredFrom = referredFrom
 		}
 
-		err = repository.Put(nt)
+		_, err = repository.Put(nt)
 		if err != nil {
 			return errors.Join(err, fmt.Errorf("Cannot save note with UID '%s'", uid))
 		}
