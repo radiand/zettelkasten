@@ -4,7 +4,6 @@ import "errors"
 import "fmt"
 import "reflect"
 import "strings"
-import "path"
 
 import "github.com/radiand/zettelkasten/internal/common"
 import "github.com/radiand/zettelkasten/internal/config"
@@ -29,9 +28,9 @@ func (self *CmdGet) Run() error {
 
 	sanitizedQuery := strings.TrimSpace(self.query)
 	if note.GetUidRegexp().MatchString(sanitizedQuery) {
-		foundWorkspaces, _ := workspaces.GetWorkspaceNames(expandedRootPath)
+		foundWorkspaces, _ := workspaces.GetWorkspaces(expandedRootPath)
 		for _, ws := range foundWorkspaces {
-			noteRepo := note.NewFilesystemNoteRepository(path.Join(expandedRootPath, ws, workspaces.NotesDirName))
+			noteRepo := note.NewFilesystemNoteRepository(ws.GetNotesPath())
 			noteObj, err := noteRepo.Get(sanitizedQuery)
 			if err != nil {
 				fmt.Println(err.Error())
