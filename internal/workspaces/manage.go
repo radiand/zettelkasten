@@ -27,6 +27,11 @@ func (self Workspace) GetNotesPath() string {
 	return path.Join(self.rootPath, self.workspaceName, NotesDirName)
 }
 
+// GetWorkspacePath constructs absolute path to workspace.
+func (self Workspace) GetWorkspacePath() string {
+	return path.Join(self.rootPath, self.workspaceName)
+}
+
 // GetName provides name of the Workspace.
 func (self Workspace) GetName() string {
 	return self.workspaceName

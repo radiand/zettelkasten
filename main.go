@@ -34,7 +34,7 @@ type cmdCommitArgs struct {
 
 type cmdGetArgs struct {
 	providePath bool
-	query       string
+	query       []string
 }
 
 type cmdInitArgs struct {
@@ -149,17 +149,7 @@ func parseCmdGet(args []string) cmdGetArgs {
 	err := flagset.Parse(args)
 	try(err, "Invalid arguments")
 
-	hint := "Provide key from config or note UID."
-	if flagset.NArg() < 1 {
-		fmt.Fprintf(os.Stderr, "Argument required. %s\n", hint)
-		os.Exit(1)
-	}
-	if flagset.NArg() > 1 {
-		fmt.Fprintf(os.Stderr, "Too many arguments. %s\n", hint)
-		os.Exit(1)
-	}
-
-	return cmdGetArgs{providePath: *providePath, query: flagset.Arg(0)}
+	return cmdGetArgs{providePath: *providePath, query: flagset.Args()}
 }
 
 func parseCmdInit(args []string) cmdInitArgs {
