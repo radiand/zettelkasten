@@ -29,7 +29,7 @@ func (self *CmdGet) Run() error {
 
 	sanitizedQuery := strings.TrimSpace(self.query)
 	if note.GetUidRegexp().MatchString(sanitizedQuery) {
-		foundWorkspaces, _ := workspaces.GetWorkspaces(expandedRootPath)
+		foundWorkspaces, _ := workspaces.GetWorkspaceNames(expandedRootPath)
 		for _, ws := range foundWorkspaces {
 			noteRepo := note.NewFilesystemNoteRepository(path.Join(expandedRootPath, ws, workspaces.NotesDirName))
 			noteObj, err := noteRepo.Get(sanitizedQuery)
