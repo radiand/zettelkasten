@@ -33,7 +33,8 @@ type cmdCommitArgs struct {
 }
 
 type cmdGetArgs struct {
-	query string
+	providePath bool
+	query       string
 }
 
 type cmdInitArgs struct {
@@ -143,6 +144,7 @@ func parseCmdCommit(args []string) cmdCommitArgs {
 
 func parseCmdGet(args []string) cmdGetArgs {
 	flagset := flag.NewFlagSet("get", flag.ExitOnError)
+	providePath := flagset.Bool("p", false, "Print path instead of the content.")
 	flagset.Usage = func() { subcommandUsage("get", COMMANDS["get"]) }
 	err := flagset.Parse(args)
 	try(err, "Invalid arguments")
@@ -157,7 +159,7 @@ func parseCmdGet(args []string) cmdGetArgs {
 		os.Exit(1)
 	}
 
-	return cmdGetArgs{query: flagset.Arg(0)}
+	return cmdGetArgs{providePath: *providePath, query: flagset.Arg(0)}
 }
 
 func parseCmdInit(args []string) cmdInitArgs {
@@ -236,8 +238,9 @@ func main() {
 	case "get":
 		parsedArgs := parseCmdGet(globalArgs.subArgs)
 		cmdGetRunner := CmdGet{
-			configPath: globalArgs.configPath,
-			query:      parsedArgs.query,
+			configPath:  globalArgs.configPath,
+			providePath: parsedArgs.providePath,
+			query:       parsedArgs.query,
 		}
 		try(cmdGetRunner.Run(), "Command failed.")
 	default:

@@ -12,7 +12,7 @@ type FilesystemNoteRepository struct {
 
 // Get obtains Note from disk.
 func (self *FilesystemNoteRepository) Get(uid string) (Note, error) {
-	content, err := os.ReadFile(self.getNotePath(uid))
+	content, err := os.ReadFile(self.GetNotePath(uid))
 	if err != nil {
 		return Note{}, err
 	}
@@ -25,7 +25,7 @@ func (self *FilesystemNoteRepository) Put(note Note) (string, error) {
 	if err != nil {
 		return "", errors.Join(err, errors.New("Cannot marshall note"))
 	}
-	path := self.getNotePath(note.Header.Uid)
+	path := self.GetNotePath(note.Header.Uid)
 	err = os.WriteFile(path, []byte(marshalled), 0644)
 	if err != nil {
 		return "", errors.Join(err, errors.New("Cannot save note"))
@@ -50,11 +50,12 @@ func (self *FilesystemNoteRepository) List() ([]string, error) {
 	return noteUids, nil
 }
 
+// GetNotePath returns absolute path to Note.
+func (repo *FilesystemNoteRepository) GetNotePath(uid string) string {
+	return filepath.Join(repo.RootDir, uid+".md")
+}
+
 // NewFilesystemNoteRepository creates new instance of the repository.
 func NewFilesystemNoteRepository(rootDir string) *FilesystemNoteRepository {
 	return &FilesystemNoteRepository{RootDir: rootDir}
-}
-
-func (repo *FilesystemNoteRepository) getNotePath(uid string) string {
-	return filepath.Join(repo.RootDir, uid+".md")
 }
