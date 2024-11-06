@@ -56,8 +56,39 @@ function! s:goto()
     execute ":edit " .. s:get_path_of_note(uid)
 endfunction
 
+function! s:fzf_sink_from_ripgrep(result)
+    " Extract absolute path from ripgrep oneline output.
+    "
+    " Args:
+    "   result: string like 'path/to/file.md:10:20:match'
+
+    let root_dir = s:get_root_dir()
+    let selected_path = split(a:result, ':')[0]
+    execute ":edit " .. root_dir .. '/' .. selected_path
+endfunction
+
+function! s:fzf_find()
+    " Spawn FZF window with search-as-you-type functionality.
+
+    let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case -- %s || true'
+    let opts = {
+    \   'source': printf(command_fmt, ''),
+    \   'dir': s:get_root_dir(),
+    \   'sink': function('s:fzf_sink_from_ripgrep'),
+    \   'options': [
+    \       '--ansi',
+    \       '--bind', 'change:reload:' .. printf(command_fmt, '{q}'),
+    \       '--delimiter', ':',
+    \       '--preview', 'cat {1}',
+    \   ],
+    \ }
+    call fzf#run(fzf#wrap(opts))
+endfunction
+
 command! -nargs=? -complete=custom,s:complete_workspaces ZkNew :call s:new(<f-args>)
 command! ZkGoto :call s:goto()
+command! ZkFZF :call s:fzf_find()
 
 nnoremap <leader>zk :ZkNew<Space>
 nnoremap <leader>zg :ZkGoto<CR>
+nnoremap <leader>zf :ZkFZF<CR>
