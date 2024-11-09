@@ -78,7 +78,7 @@ func subcommandUsageWithOptions(flagset *flag.FlagSet, name string, help string)
 
 func parseGlobalArgs() globalArgs {
 	configPath := flag.String(
-		"config",
+		"f",
 		"~/.config/zettelkasten/config.toml",
 		"Path to config.toml file",
 	)
