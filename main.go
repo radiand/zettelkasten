@@ -132,7 +132,7 @@ func parseCmdNew(args []string) cmdNewArgs {
 func parseCmdCommit(args []string) cmdCommitArgs {
 	flagset := flag.NewFlagSet("commit", flag.ExitOnError)
 	cooldown := flagset.Duration(
-		"cooldown",
+		"c",
 		time.Duration(0),
 		"Setup how much time has to pass to allow commiting a file.",
 	)
