@@ -6,7 +6,6 @@ package main
 import "flag"
 import "fmt"
 import "os"
-import "strings"
 import "time"
 
 import "github.com/radiand/zettelkasten/internal/common"
@@ -45,61 +44,14 @@ type cmdNewArgs struct {
 	workspaceName string
 }
 
-func flagprint(lines []string) {
-	fmt.Fprintln(
-		flag.CommandLine.Output(),
-		strings.Join(
-			lines,
-			"\n",
-		),
-	)
-}
-
-func subcommandUsage(name string, help string) {
-	flagprint([]string{
-		help,
-		"",
-		"Usage:",
-		"  zettelkasten [global-options] " + name,
-	})
-}
-
-func subcommandUsageWithOptions(flagset *flag.FlagSet, name string, help string) {
-	flagprint([]string{
-		help,
-		"",
-		"Usage:",
-		"  zettelkasten [global-options] " + name + " [options]",
-		"",
-		"Options:",
-	})
-	flagset.PrintDefaults()
-}
-
 func parseGlobalArgs() globalArgs {
 	configPath := flag.String(
 		"f",
 		"~/.config/zettelkasten/config.toml",
 		"Path to config.toml file",
 	)
-	flag.Usage = func() {
-		flagprint([]string{
-			"Usage:",
-			"  zettelkasten [options] <command>",
-			"",
-			"Options:",
-		})
-		flag.PrintDefaults()
-
-		commandsLines := []string{
-			"",
-			"Available commands:",
-		}
-		for cmdName, cmdHelp := range COMMANDS {
-			commandsLines = append(commandsLines, fmt.Sprintf("  %-10s %s", cmdName, cmdHelp))
-		}
-		flagprint(commandsLines)
-	}
+	usage := BuildUsage("zettelkasten", "Note management").WithCommands(COMMANDS)
+	flag.Usage = func() { flagprint(usage.Render(flag.CommandLine)) }
 	flag.Parse()
 
 	args := flag.Args()
@@ -114,7 +66,12 @@ func parseGlobalArgs() globalArgs {
 
 func parseCmdNew(args []string) cmdNewArgs {
 	flagset := flag.NewFlagSet("new", flag.ExitOnError)
-	flagset.Usage = func() { subcommandUsageWithOptions(flagset, "new", COMMANDS["new"]) }
+	usage := BuildUsage(
+		"zettelkasten new", COMMANDS["new"],
+	).WithArguments(
+		map[string]string{"workspace": "(optional) Workspace in which note will be created. Default from config if not specified."},
+	)
+	flagset.Usage = func() { flagprint(usage.Render(flagset)) }
 	err := flagset.Parse(args)
 	try(err, "Invalid arguments")
 	hint := "Provide name of the workspace to create a new note in."
@@ -136,7 +93,8 @@ func parseCmdCommit(args []string) cmdCommitArgs {
 		time.Duration(0),
 		"Setup how much time has to pass to allow commiting a file.",
 	)
-	flagset.Usage = func() { subcommandUsageWithOptions(flagset, "commit", COMMANDS["commit"]) }
+	usage := BuildUsage("zettelkasten commit", COMMANDS["commit"])
+	flagset.Usage = func() { flagprint(usage.Render(flagset)) }
 	err := flagset.Parse(args)
 	try(err, "Invalid arguments")
 	return cmdCommitArgs{cooldown: *cooldown}
@@ -145,7 +103,8 @@ func parseCmdCommit(args []string) cmdCommitArgs {
 func parseCmdGet(args []string) cmdGetArgs {
 	flagset := flag.NewFlagSet("get", flag.ExitOnError)
 	providePath := flagset.Bool("p", false, "Print path instead of the content.")
-	flagset.Usage = func() { subcommandUsage("get", COMMANDS["get"]) }
+	usage := BuildUsage("zettelkasten get", COMMANDS["get"])
+	flagset.Usage = func() { flagprint(usage.Render(flagset)) }
 	err := flagset.Parse(args)
 	try(err, "Invalid arguments")
 
@@ -154,7 +113,12 @@ func parseCmdGet(args []string) cmdGetArgs {
 
 func parseCmdInit(args []string) cmdInitArgs {
 	flagset := flag.NewFlagSet("init", flag.ExitOnError)
-	flagset.Usage = func() { subcommandUsage("init", COMMANDS["init"]) }
+	usage := BuildUsage(
+		"zettelkasten init", COMMANDS["init"],
+	).WithArguments(
+		map[string]string{"workspace": "(optional) Workspace to be created."},
+	)
+	flagset.Usage = func() { flagprint(usage.Render(flagset)) }
 	err := flagset.Parse(args)
 	try(err, "Invalid arguments")
 	hint := "Provide name for new workspace."
@@ -171,7 +135,8 @@ func parseCmdInit(args []string) cmdInitArgs {
 
 func parseCmdLink(args []string) {
 	flagset := flag.NewFlagSet("link", flag.ExitOnError)
-	flagset.Usage = func() { subcommandUsage("link", COMMANDS["link"]) }
+	usage := BuildUsage("zettelkasten link", COMMANDS["link"])
+	flagset.Usage = func() { flagprint(usage.Render(flagset)) }
 	flagset.Parse(args)
 }
 
