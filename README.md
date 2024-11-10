@@ -58,8 +58,8 @@ To follow default settings and create configuration in
 zettelkasten init
 ```
 
-Alternatively, you can use `-config <path>` to set where you want to store
-config file. Remember that you will have to keep typing `-config` forever then.
+Alternatively, you can use `-f <path>` to set where you want to store config
+file. Remember that you will have to keep typing `-f` forever then.
 
 ## Your first note
 
@@ -89,69 +89,20 @@ itself.
   any online services.
 - Backup.
 
-# Workflow
+# (n)vim plugin
 
 You can use any text editor, as long it can easily cooperate with `zettelkasten`
-binary, i.e. you are able to define key mappings to create and search notes. For
-`nvim` you can imagine following mappings:
-
-- `<leader>zk` to create new note,
-- `<leader>zf` to find notes,
-- `<leader>zg` to follow links (use when UID is under cursor).
-
-To achieve this, you can use snippets show below. Search functionality is
-provided by `fzf` or `telescope`.
+binary, i.e. you are able to define key mappings to create and search notes.
+Just because I use `nvim`, I prepared dedicated plugin. To install it, use your
+plugin manager, e.g. [`vim-plug`](https://github.com/junegunn/vim-plug):
 
 ```vim
-" If you wish to use fzf, define this helper beforehand.
-function! RGPath(fullscreen, path)
-    " Interactive live grep on file contents in specific directory.
-
-    let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case -- %s || true'
-    let initial_command = printf(command_fmt, '')
-    let reload_command = printf(command_fmt, '{q}' .. ' ' .. a:path)
-    let spec = {'options': ['--bind', 'change:reload:' .. reload_command]}
-    call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(spec), a:fullscreen)
-endfunction
-
-function ZettelGetRootDir()
-    " Get directory where notes are stored.
-    return trim(system('zettelkasten get ZettelkastenDir'))
-endfunction
-
-function ZettelCreate()
-    " Create new zettelkasten note.
-    let new_note_path = system('zettelkasten new')
-
-    " Open buffer with new note.
-    execute ":edit " . new_note_path
-
-    " Jump cursor to the bottom.
-    normal G
-endfunction
-
-function ZettelGoto()
-    " Get UID under cursor and open the note in new buffer.
-
-    let cur_word = expand("<cword>")
-    let uid_pattern = "\\d\\{4}\\d\\{2}\\d\\{2}T\\d\\{2}\\d\\{2}\\d\\{2}Z"
-    let uid = matchstr(cur_word, uid_pattern)
-    if empty(uid)
-        echo "No valid UID under cursor"
-        return
-    endif
-    execute ":edit " .. ZettelGetRootDir() .. '/' .. uid .. ".md"
-endfunction
-
-command ZettelCreate :call ZettelCreate()
-command ZettelGoto :call ZettelGoto()
-
-nnoremap <leader>zk :ZettelCreate<CR>
-nnoremap <leader>zg :ZettelGoto<CR>
-
-" For fzf:
-nnoremap <leader>zf :call RGPath(0, ZettelGetRootDir())<CR>
-
-" For telescope.nvim:
-" nnoremap <leader>zf :lua require("telescope.builtin").live_grep({cwd=vim.fn.ZettelGetRootDir(), additional_args={"--no-ignore"}})<CR>
+Plug 'radiand/zettelkasten'
 ```
+
+Currently it defines following mappings:
+
+- `<leader>zk` to create new note (supports tab-completion of workspaces),
+- `<leader>zf` to find notes (requires [fzf](https://github.com/junegunn/fzf)),
+- `<leader>zg` to follow links (use when UID is under cursor).
+
