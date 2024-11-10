@@ -50,8 +50,8 @@ func parseGlobalArgs() globalArgs {
 		"~/.config/zettelkasten/config.toml",
 		"Path to config.toml file",
 	)
-	usage := BuildUsage("zettelkasten", "Note management").WithCommands(COMMANDS)
-	flag.Usage = func() { flagprint(usage.Render(flag.CommandLine)) }
+	usage := common.BuildUsage("zettelkasten", "Note management").WithCommands(COMMANDS)
+	flag.Usage = func() { common.Flagprint(usage.Render(flag.CommandLine)) }
 	flag.Parse()
 
 	args := flag.Args()
@@ -66,12 +66,12 @@ func parseGlobalArgs() globalArgs {
 
 func parseCmdNew(args []string) cmdNewArgs {
 	flagset := flag.NewFlagSet("new", flag.ExitOnError)
-	usage := BuildUsage(
+	usage := common.BuildUsage(
 		"zettelkasten new", COMMANDS["new"],
 	).WithArguments(
 		map[string]string{"workspace": "(optional) Workspace in which note will be created. Default from config if not specified."},
 	)
-	flagset.Usage = func() { flagprint(usage.Render(flagset)) }
+	flagset.Usage = func() { common.Flagprint(usage.Render(flagset)) }
 	err := flagset.Parse(args)
 	try(err, "Invalid arguments")
 	hint := "Provide name of the workspace to create a new note in."
@@ -93,8 +93,8 @@ func parseCmdCommit(args []string) cmdCommitArgs {
 		time.Duration(0),
 		"Setup how much time has to pass to allow commiting a file.",
 	)
-	usage := BuildUsage("zettelkasten commit", COMMANDS["commit"])
-	flagset.Usage = func() { flagprint(usage.Render(flagset)) }
+	usage := common.BuildUsage("zettelkasten commit", COMMANDS["commit"])
+	flagset.Usage = func() { common.Flagprint(usage.Render(flagset)) }
 	err := flagset.Parse(args)
 	try(err, "Invalid arguments")
 	return cmdCommitArgs{cooldown: *cooldown}
@@ -103,8 +103,8 @@ func parseCmdCommit(args []string) cmdCommitArgs {
 func parseCmdGet(args []string) cmdGetArgs {
 	flagset := flag.NewFlagSet("get", flag.ExitOnError)
 	providePath := flagset.Bool("p", false, "Print path instead of the content.")
-	usage := BuildUsage("zettelkasten get", COMMANDS["get"])
-	flagset.Usage = func() { flagprint(usage.Render(flagset)) }
+	usage := common.BuildUsage("zettelkasten get", COMMANDS["get"])
+	flagset.Usage = func() { common.Flagprint(usage.Render(flagset)) }
 	err := flagset.Parse(args)
 	try(err, "Invalid arguments")
 
@@ -113,12 +113,12 @@ func parseCmdGet(args []string) cmdGetArgs {
 
 func parseCmdInit(args []string) cmdInitArgs {
 	flagset := flag.NewFlagSet("init", flag.ExitOnError)
-	usage := BuildUsage(
+	usage := common.BuildUsage(
 		"zettelkasten init", COMMANDS["init"],
 	).WithArguments(
 		map[string]string{"workspace": "(optional) Workspace to be created."},
 	)
-	flagset.Usage = func() { flagprint(usage.Render(flagset)) }
+	flagset.Usage = func() { common.Flagprint(usage.Render(flagset)) }
 	err := flagset.Parse(args)
 	try(err, "Invalid arguments")
 	hint := "Provide name for new workspace."
@@ -135,8 +135,8 @@ func parseCmdInit(args []string) cmdInitArgs {
 
 func parseCmdLink(args []string) {
 	flagset := flag.NewFlagSet("link", flag.ExitOnError)
-	usage := BuildUsage("zettelkasten link", COMMANDS["link"])
-	flagset.Usage = func() { flagprint(usage.Render(flagset)) }
+	usage := common.BuildUsage("zettelkasten link", COMMANDS["link"])
+	flagset.Usage = func() { common.Flagprint(usage.Render(flagset)) }
 	flagset.Parse(args)
 }
 

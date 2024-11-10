@@ -1,10 +1,12 @@
-package main
+package common
 
 import "flag"
 import "fmt"
 import "strings"
 
-func flagprint(lines []string) {
+// Flagprint joins given lines and prints to the output specified by global
+// flag handler.
+func Flagprint(lines []string) {
 	fmt.Fprintln(
 		flag.CommandLine.Output(),
 		strings.Join(
