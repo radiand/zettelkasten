@@ -32,7 +32,7 @@ function! s:new(workspace=v:null)
 
     let system_cmd = 'zettelkasten new'
     if !empty(a:workspace)
-        system_cmd = system_cmd .. ' ' .. a:workspace
+        let system_cmd = system_cmd ..  ' ' .. a:workspace
     endif
     let new_note_path = trim(system(system_cmd))
 
