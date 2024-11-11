@@ -78,9 +78,10 @@ function! s:fzf_find()
     \   'options': [
     \       '--disabled',
     \       '--ansi',
-    \       '--bind', 'change:reload:' .. printf(command_fmt, '{q}'),
+    \       '--bind', 'change:reload:sleep 0.1; ' .. printf(command_fmt, '{q}'),
     \       '--delimiter', ':',
     \       '--preview', 'cat {1}',
+    \       '--preview-window', 'right:60%:<80(up:60%)'
     \   ],
     \ }
     call fzf#run(fzf#wrap(opts))
