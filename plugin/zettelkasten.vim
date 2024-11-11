@@ -81,8 +81,8 @@ function! s:fzf_find()
     \       '--ansi',
     \       '--bind', 'change:reload:sleep 0.1; ' .. printf(command_fmt, '{q}'),
     \       '--delimiter', ':',
-    \       '--preview-window', 'right:60%:<80(up:60%)'
     \       '--preview', preview_cmd,
+    \       '--preview-window', 'right:60%:+{2}:<80(up:60%)'
     \   ],
     \ }
     call fzf#run(fzf#wrap(opts))
