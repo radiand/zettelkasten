@@ -71,6 +71,7 @@ function! s:fzf_find()
     " Spawn FZF window with search-as-you-type functionality.
 
     let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case -- %s || true'
+    let preview_cmd = 'rg --passthru --no-line-number --color=always --smart-case --no-messages {q} {1}'
     let opts = {
     \   'source': printf(command_fmt, ''),
     \   'dir': s:get_root_dir(),
@@ -80,8 +81,8 @@ function! s:fzf_find()
     \       '--ansi',
     \       '--bind', 'change:reload:sleep 0.1; ' .. printf(command_fmt, '{q}'),
     \       '--delimiter', ':',
-    \       '--preview', 'cat {1}',
     \       '--preview-window', 'right:60%:<80(up:60%)'
+    \       '--preview', preview_cmd,
     \   ],
     \ }
     call fzf#run(fzf#wrap(opts))
