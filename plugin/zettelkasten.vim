@@ -63,8 +63,12 @@ function! s:fzf_sink_from_ripgrep(result)
     "   result: string like 'path/to/file.md:10:20:match'
 
     let root_dir = s:get_root_dir()
-    let selected_path = split(a:result, ':')[0]
+    let match_split = split(a:result, ':')
+    let selected_path = match_split[0]
+    let line_no = match_split[1]
+    let col_no = match_split[2]
     execute ":edit " .. root_dir .. '/' .. selected_path
+    call cursor(line_no, col_no)
 endfunction
 
 function! s:fzf_find()
