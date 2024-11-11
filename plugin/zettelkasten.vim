@@ -76,6 +76,7 @@ function! s:fzf_find()
     \   'dir': s:get_root_dir(),
     \   'sink': function('s:fzf_sink_from_ripgrep'),
     \   'options': [
+    \       '--disabled',
     \       '--ansi',
     \       '--bind', 'change:reload:' .. printf(command_fmt, '{q}'),
     \       '--delimiter', ':',
