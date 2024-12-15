@@ -1,4 +1,4 @@
-package main
+package application
 
 import "errors"
 import "fmt"
@@ -19,13 +19,13 @@ var DefaultWorkspaceName = "main"
 // CmdInit creates configuration file and required directories if they do not
 // exist.
 type CmdInit struct {
-	configPath    string
-	workspaceName string
+	ConfigPath    string
+	WorkspaceName string
 }
 
 // Run performs initialization command.
 func (self *CmdInit) Run() error {
-	expandedConfigPath := common.ExpandHomeDir(self.configPath)
+	expandedConfigPath := common.ExpandHomeDir(self.ConfigPath)
 	isConfigFile, _ := common.Exists(expandedConfigPath)
 
 	var expandedRootPath string
@@ -56,7 +56,7 @@ func (self *CmdInit) Run() error {
 	}
 
 	// CLI arguments is most important, then config, then defaults.
-	workspaceName := chooseFirstNonEmpty(self.workspaceName, workspaceNameFromConfig, DefaultWorkspaceName)
+	workspaceName := chooseFirstNonEmpty(self.WorkspaceName, workspaceNameFromConfig, DefaultWorkspaceName)
 	_, err := workspaces.IsOkay(expandedRootPath, workspaceName)
 	if errors.Is(err, workspaces.ErrOsFailure) {
 		return err

@@ -8,6 +8,7 @@ import "fmt"
 import "os"
 import "time"
 
+import "github.com/radiand/zettelkasten/internal/application"
 import "github.com/radiand/zettelkasten/internal/common"
 import "github.com/radiand/zettelkasten/internal/config"
 import "github.com/radiand/zettelkasten/internal/git"
@@ -145,9 +146,9 @@ func main() {
 
 	if globalArgs.subcommand == "init" {
 		parsedArgs := parseCmdInit(globalArgs.subArgs)
-		cmdInitRunner := CmdInit{
-			configPath:    globalArgs.configPath,
-			workspaceName: parsedArgs.workspaceName,
+		cmdInitRunner := application.CmdInit{
+			ConfigPath:    globalArgs.configPath,
+			WorkspaceName: parsedArgs.workspaceName,
 		}
 		try(cmdInitRunner.Run(), "Command failed.")
 		os.Exit(0)
@@ -168,34 +169,34 @@ func main() {
 		if parsedArgs.workspaceName != "" {
 			workspaceName = parsedArgs.workspaceName
 		}
-		cmdNewRunner := CmdNew{
-			zettelkastenDir: zettelkastenDir,
-			workspaceName:   workspaceName,
+		cmdNewRunner := application.CmdNew{
+			ZettelkastenDir: zettelkastenDir,
+			WorkspaceName:   workspaceName,
 		}
 		try(cmdNewRunner.Run(), "Command failed.")
 	case "link":
 		parseCmdLink(globalArgs.subArgs)
-		cmdLinkRunner := CmdLink{
-			zettelkastenDir: zettelkastenDir,
+		cmdLinkRunner := application.CmdLink{
+			ZettelkastenDir: zettelkastenDir,
 		}
 		try(cmdLinkRunner.Run(), "Command failed.")
 	case "commit":
 		trackedDirectories := []string{zettelkastenDir}
 		parsedArgs := parseCmdCommit(globalArgs.subArgs)
-		cmdCommitRunner := CmdCommit{
-			dirs:       trackedDirectories,
-			gitFactory: gitFactory,
-			nowtime:    common.Now,
-			modtime:    common.ModificationTime,
-			cooldown:   parsedArgs.cooldown,
+		cmdCommitRunner := application.CmdCommit{
+			Dirs:       trackedDirectories,
+			GitFactory: gitFactory,
+			Nowtime:    common.Now,
+			Modtime:    common.ModificationTime,
+			Cooldown:   parsedArgs.cooldown,
 		}
 		try(cmdCommitRunner.Run(), "Command failed.")
 	case "get":
 		parsedArgs := parseCmdGet(globalArgs.subArgs)
-		cmdGetRunner := CmdGet{
-			configPath:  globalArgs.configPath,
-			providePath: parsedArgs.providePath,
-			query:       parsedArgs.query,
+		cmdGetRunner := application.CmdGet{
+			ConfigPath:  globalArgs.configPath,
+			ProvidePath: parsedArgs.providePath,
+			Query:       parsedArgs.query,
 		}
 		try(cmdGetRunner.Run(), "Command failed.")
 	default:

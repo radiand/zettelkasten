@@ -43,7 +43,7 @@ provides it in its repos.
 After cloning this repository, `cd` into and run:
 
 ```bash
-go install .
+go install ./cmd/zettelkasten
 ```
 
 If your OS is setup properly and your `PATH` is populated with `go` built

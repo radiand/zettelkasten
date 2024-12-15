@@ -1,4 +1,4 @@
-package main
+package application
 
 import "testing"
 import "time"
@@ -13,8 +13,8 @@ func TestCommitWhenNoChanges(t *testing.T) {
 	gitMock.StatusReturns.Enqueue([]git.FileStatus{})
 
 	cmdCommit := CmdCommit{
-		dirs:       []string{"/tmp"}, // Does not matter.
-		gitFactory: func(string) git.IGit { return &gitMock },
+		Dirs:       []string{"/tmp"}, // Does not matter.
+		GitFactory: func(string) git.IGit { return &gitMock },
 	}
 
 	// WHEN
@@ -38,8 +38,8 @@ func TestCommitChanges(t *testing.T) {
 	)
 
 	cmdCommit := CmdCommit{
-		dirs:       []string{"/tmp"}, // Does not matter.
-		gitFactory: func(string) git.IGit { return &gitMock },
+		Dirs:       []string{"/tmp"}, // Does not matter.
+		GitFactory: func(string) git.IGit { return &gitMock },
 	}
 
 	// WHEN
@@ -80,11 +80,11 @@ func TestCommitOldEnough(t *testing.T) {
 
 	cooldown, _ := time.ParseDuration("60s")
 	cmdCommit := CmdCommit{
-		dirs:       []string{"/virtual/zettelkasten"},
-		gitFactory: func(string) git.IGit { return &gitMock },
-		nowtime:    testutils.Then(t0.Add(time.Second * 61)),
-		modtime:    testutils.TimeOfPath(pathModTimes),
-		cooldown:   cooldown,
+		Dirs:       []string{"/virtual/zettelkasten"},
+		GitFactory: func(string) git.IGit { return &gitMock },
+		Nowtime:    testutils.Then(t0.Add(time.Second * 61)),
+		Modtime:    testutils.TimeOfPath(pathModTimes),
+		Cooldown:   cooldown,
 	}
 
 	// WHEN

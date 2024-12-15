@@ -1,4 +1,4 @@
-package main
+package application
 
 import "fmt"
 import "errors"
@@ -10,16 +10,16 @@ import "github.com/radiand/zettelkasten/internal/git"
 
 // CmdCommit carries required params to run command.
 type CmdCommit struct {
-	dirs       []string
-	gitFactory func(workdir string) git.IGit
-	nowtime    func() time.Time
-	modtime    func(path string) (time.Time, error)
-	cooldown   time.Duration
+	Dirs       []string
+	GitFactory func(workdir string) git.IGit
+	Nowtime    func() time.Time
+	Modtime    func(path string) (time.Time, error)
+	Cooldown   time.Duration
 }
 
 // Run performs git commit with all changes that happened in RootDir directory.
 func (self CmdCommit) Run() error {
-	for _, path := range self.dirs {
+	for _, path := range self.Dirs {
 		err := self.run(path)
 		if err != nil {
 			return err
@@ -29,9 +29,9 @@ func (self CmdCommit) Run() error {
 }
 
 func (self CmdCommit) run(workdir string) error {
-	gitHandler := self.gitFactory(workdir)
+	gitHandler := self.GitFactory(workdir)
 	var addErr error
-	if self.cooldown > 0 {
+	if self.Cooldown > 0 {
 		pathsToIgnore, err := self.filterPathsStillInCooldown(workdir)
 		if err != nil {
 			return err
@@ -67,7 +67,7 @@ func (self CmdCommit) run(workdir string) error {
 }
 
 func (self CmdCommit) filterPathsStillInCooldown(workdir string) ([]string, error) {
-	gitHandler := self.gitFactory(workdir)
+	gitHandler := self.GitFactory(workdir)
 	statuses, err := gitHandler.Status()
 	if err != nil {
 		return []string{}, errors.Join(err, errors.New("Could not obtain git status"))
@@ -79,14 +79,14 @@ func (self CmdCommit) filterPathsStillInCooldown(workdir string) ([]string, erro
 	}
 
 	paths := []string{}
-	now := self.nowtime()
+	now := self.Nowtime()
 	for _, status := range statuses {
 		path := path.Join(gitRootDir, status.Path)
-		modtime, err := self.modtime(path)
+		modtime, err := self.Modtime(path)
 		if err != nil {
 			return []string{}, errors.Join(err, fmt.Errorf("Could not get mod time of path %s", path))
 		}
-		if now.Sub(modtime) <= self.cooldown {
+		if now.Sub(modtime) <= self.Cooldown {
 			paths = append(paths, status.Path)
 		}
 	}

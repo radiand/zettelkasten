@@ -1,4 +1,4 @@
-package main
+package application
 
 import "errors"
 import "fmt"
@@ -12,34 +12,34 @@ import "github.com/radiand/zettelkasten/internal/workspaces"
 
 // CmdGet allows reading and printing config.
 type CmdGet struct {
-	configPath  string
-	providePath bool
-	query       []string
+	ConfigPath  string
+	ProvidePath bool
+	Query       []string
 }
 
 // Run executes the command.
 func (self *CmdGet) Run() error {
-	expandedConfigPath := common.ExpandHomeDir(self.configPath)
+	expandedConfigPath := common.ExpandHomeDir(self.ConfigPath)
 	configObj, err := config.GetConfigFromFile(expandedConfigPath)
 	if err != nil {
 		return errors.Join(err, errors.New("Could not open config"))
 	}
 
-	if len(self.query) == 0 {
+	if len(self.Query) == 0 {
 		fmt.Fprintf(os.Stderr, "Query must contain resource and key.\n")
 		return errors.New("Invalid query")
 	}
 
-	switch self.query[0] {
+	switch self.Query[0] {
 	case "config":
-		return handleConfigQuery(configObj, self.query)
+		return handleConfigQuery(configObj, self.Query)
 	case "note":
-		return handleNoteQuery(configObj, self.query, self.providePath)
+		return handleNoteQuery(configObj, self.Query, self.ProvidePath)
 	case "workspace":
-		return handleWorkspaceQuery(configObj, self.query, self.providePath)
+		return handleWorkspaceQuery(configObj, self.Query, self.ProvidePath)
 	}
 
-	return fmt.Errorf("Resource '%s' is not supported", self.query[0])
+	return fmt.Errorf("Resource '%s' is not supported", self.Query[0])
 }
 
 func handleConfigQuery(cfg config.Config, query []string) error {

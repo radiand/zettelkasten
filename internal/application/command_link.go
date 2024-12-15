@@ -1,4 +1,4 @@
-package main
+package application
 
 import "errors"
 
@@ -7,13 +7,13 @@ import "github.com/radiand/zettelkasten/internal/workspaces"
 
 // CmdLink carries required params to run command.
 type CmdLink struct {
-	zettelkastenDir string
+	ZettelkastenDir string
 }
 
 // Run seeks for references between notes and updates their headers if there
 // are any.
 func (self *CmdLink) Run() error {
-	foundWorkspaces, err := workspaces.GetWorkspaces(self.zettelkastenDir)
+	foundWorkspaces, err := workspaces.GetWorkspaces(self.ZettelkastenDir)
 	if err != nil {
 		return errors.Join(err, errors.New("Could not link because no workspaces were found"))
 	}
