@@ -4,7 +4,7 @@ import "errors"
 import "fmt"
 import "path"
 
-import "github.com/radiand/zettelkasten/internal/note"
+import "github.com/radiand/zettelkasten/internal/notes"
 import "github.com/radiand/zettelkasten/internal/workspaces"
 
 // CmdNew carries required params to run command.

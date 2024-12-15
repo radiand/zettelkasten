@@ -2,7 +2,7 @@ package main
 
 import "errors"
 
-import "github.com/radiand/zettelkasten/internal/note"
+import "github.com/radiand/zettelkasten/internal/notes"
 import "github.com/radiand/zettelkasten/internal/workspaces"
 
 // CmdLink carries required params to run command.

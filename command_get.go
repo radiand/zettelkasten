@@ -7,7 +7,7 @@ import "reflect"
 
 import "github.com/radiand/zettelkasten/internal/common"
 import "github.com/radiand/zettelkasten/internal/config"
-import "github.com/radiand/zettelkasten/internal/note"
+import "github.com/radiand/zettelkasten/internal/notes"
 import "github.com/radiand/zettelkasten/internal/workspaces"
 
 // CmdGet allows reading and printing config.
