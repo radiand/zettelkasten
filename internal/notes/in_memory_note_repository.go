@@ -1,4 +1,4 @@
-package note
+package notes
 
 // InMemoryNoteRepository is an implementation of INoteRepository interface and
 // stores notes in memory. Use cases: debugging, testing.

@@ -1,4 +1,4 @@
-package note
+package notes
 
 import "regexp"
 import "slices"

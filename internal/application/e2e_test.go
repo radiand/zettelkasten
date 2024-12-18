@@ -55,10 +55,10 @@ func TestCreateNote(t *testing.T) {
 	noteUid := strings.TrimRight(noteFilename, ".md") // revive:disable-line
 
 	// Open the note once again, but this time using proper Repository.
-	noteRepo := note.NewFilesystemNoteRepository(notesDir)
-	openNote, err := noteRepo.Get(noteUid)
+	noteRepo := notes.NewFilesystemNoteRepository(notesDir)
+	note, err := noteRepo.Get(noteUid)
 	assert.Nil(t, err)
 
 	// Header should match filename UID.
-	assert.Equal(t, openNote.Header.Uid, noteUid)
+	assert.Equal(t, note.Header.Uid, noteUid)
 }

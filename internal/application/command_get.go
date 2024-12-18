@@ -64,7 +64,7 @@ func handleNoteQuery(cfg config.Config, query []string, providePath bool) error 
 
 	uid := query[1]
 
-	if !note.GetUidRegexp().MatchString(uid) {
+	if !notes.GetUidRegexp().MatchString(uid) {
 		fmt.Fprintf(os.Stderr, "%s is not a valid note UID.\n", uid)
 		return errors.New("Invalid query")
 	}
@@ -72,7 +72,7 @@ func handleNoteQuery(cfg config.Config, query []string, providePath bool) error 
 	expandedRootPath := common.ExpandHomeDir(cfg.ZettelkastenDir)
 	foundWorkspaces, _ := workspaces.GetWorkspaces(expandedRootPath)
 	for _, ws := range foundWorkspaces {
-		noteRepo := note.NewFilesystemNoteRepository(ws.GetNotesPath())
+		noteRepo := notes.NewFilesystemNoteRepository(ws.GetNotesPath())
 		noteObj, err := noteRepo.Get(uid)
 		if err != nil {
 			continue

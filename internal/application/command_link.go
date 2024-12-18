@@ -19,8 +19,8 @@ func (self *CmdLink) Run() error {
 	}
 
 	for _, ws := range foundWorkspaces {
-		repository := note.NewFilesystemNoteRepository(ws.GetNotesPath())
-		err := note.LinkNotes(repository)
+		repository := notes.NewFilesystemNoteRepository(ws.GetNotesPath())
+		err := notes.LinkNotes(repository)
 		if err != nil {
 			return errors.Join(err, errors.New("CmdLink failed"))
 		}

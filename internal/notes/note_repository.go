@@ -1,4 +1,4 @@
-package note
+package notes
 
 // INoteRepository defines interface for repositories - types returning Notes.
 type INoteRepository interface {

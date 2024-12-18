@@ -1,7 +1,7 @@
 /*
-Package note defines representation and methods of a single zettelkasten note
+Package notes defines representation and methods of a single zettelkasten note
 */
-package note
+package notes
 
 import "fmt"
 
