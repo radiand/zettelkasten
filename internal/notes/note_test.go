@@ -1,5 +1,6 @@
 package notes
 
+import "time"
 import "testing"
 
 import "github.com/stretchr/testify/assert"
@@ -37,7 +38,7 @@ func TestSaveNote(t *testing.T) {
 
 func TestNewNote(t *testing.T) {
 	// WHEN
-	actual := NewNote()
+	actual := NewNote(time.Now())
 
 	// THEN
 	assert.Equal(t, actual.Header.Title, "")
@@ -50,7 +51,7 @@ func TestNewNote(t *testing.T) {
 
 func TestArrangeNote(t *testing.T) {
 	// GIVEN
-	note := NewNote()
+	note := NewNote(time.Now())
 	note.Header.Tags = []string{"b", "C", "a"}
 	note.Header.ReferredFrom = []string{"20010101T010101Z", "19700101T010101Z"}
 	note.Header.RefersTo = []string{"20020202T020202Z", "19700202T020202Z"}

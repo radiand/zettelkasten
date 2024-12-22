@@ -4,6 +4,7 @@ Package notes defines representation and methods of a single zettelkasten note
 package notes
 
 import "fmt"
+import "time"
 
 // Note is a single zettelkasten note.
 type Note struct {
@@ -32,7 +33,12 @@ func (self *Note) Arrange() {
 	self.Header.Arrange()
 }
 
-// NewNote creates new Note, dated now.
-func NewNote() Note {
-	return Note{Header: NewHeader(), Body: ""}
+// NewNote creates new Note.
+func NewNote(when time.Time) Note {
+	return Note{Header: NewHeader(when), Body: ""}
+}
+
+// NewNoteNow creates new Note, dated now.
+func NewNoteNow() Note {
+	return Note{Header: NewHeader(time.Now()), Body: ""}
 }

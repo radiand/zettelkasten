@@ -172,6 +172,7 @@ func main() {
 		cmdNewRunner := application.CmdNew{
 			ZettelkastenDir: zettelkastenDir,
 			WorkspaceName:   workspaceName,
+			Nowtime:         common.Now,
 		}
 		try(cmdNewRunner.Run(), "Command failed.")
 	case "link":

@@ -51,14 +51,13 @@ func (self *Header) Arrange() {
 	sort.Sort(sort.StringSlice(self.RefersTo))
 }
 
-// NewHeader creates new Header, dated now.
-func NewHeader() Header {
-	now := time.Now()
-	uid := now.UTC().Format("20060102T150405Z")
+// NewHeader creates new Header.
+func NewHeader(when time.Time) Header {
+	uid := when.UTC().Format("20060102T150405Z")
 
 	return Header{
 		Title:        "",
-		Timestamp:    now.Format("2006-01-02T15:04:05-07:00"),
+		Timestamp:    when.Format("2006-01-02T15:04:05-07:00"),
 		Uid:          uid,
 		Tags:         []string{},
 		ReferredFrom: []string{},

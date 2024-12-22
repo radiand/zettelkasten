@@ -2,6 +2,7 @@ package notes
 
 import "fmt"
 import "testing"
+import "time"
 
 import "github.com/stretchr/testify/assert"
 
@@ -24,15 +25,13 @@ func TestFindUids(t *testing.T) {
 
 func TestReferences(t *testing.T) {
 	// GIVEN
-	note1 := NewNote()
-	note1uid := "19910101T010101Z"
-	note1.Header.Uid = note1uid
+	note1 := NewNote(time.Date(1991, 1, 1, 1, 1, 1, 0, time.UTC))
+	note1uid := note1.Header.Uid
 	uid11 := "20240101T010101Z"
 	note1.Body = fmt.Sprintf("Refers to [[%s]]", uid11)
 
-	note2 := NewNote()
-	note2uid := "19920202T020202Z"
-	note2.Header.Uid = note2uid
+	note2 := NewNote(time.Date(1992, 2, 2, 2, 2, 2, 0, time.UTC))
+	note2uid := note2.Header.Uid
 	uid21 := "20240202T020202Z"
 	uid22 := "20240303T030303Z"
 	note2.Body = fmt.Sprintf("Refers to [[%s]] and [[%s]]", uid21, uid22)
@@ -67,13 +66,8 @@ func TestReferences(t *testing.T) {
 // anywhere do not appear in the references map.
 func TestReferencesWhenNotesAreNotRelated(t *testing.T) {
 	// GIVEN
-	note1 := NewNote()
-	note1uid := "19910101T010101Z"
-	note1.Header.Uid = note1uid
-
-	note2 := NewNote()
-	note2uid := "19920202T020202Z"
-	note2.Header.Uid = note2uid
+	note1 := NewNote(time.Date(1991, 1, 1, 1, 1, 1, 0, time.UTC))
+	note2 := NewNote(time.Date(1992, 2, 2, 2, 2, 2, 0, time.UTC))
 
 	repository := NewInMemoryNoteRepository()
 	repository.Put(note1)
@@ -89,15 +83,13 @@ func TestReferencesWhenNotesAreNotRelated(t *testing.T) {
 
 func TestLinkNotes(t *testing.T) {
 	// GIVEN
-	note1 := NewNote()
-	note1uid := "19910101T010101Z"
-	note1.Header.Uid = note1uid
+	note1 := NewNote(time.Date(1991, 1, 1, 1, 1, 1, 0, time.UTC))
+	note1uid := note1.Header.Uid
 	uid11 := "20240101T010101Z"
 	note1.Body = fmt.Sprintf("Refers to [[%s]]", uid11)
 
-	note2 := NewNote()
-	note2uid := "19920202T020202Z"
-	note2.Header.Uid = note2uid
+	note2 := NewNote(time.Date(1992, 2, 2, 2, 2, 2, 0, time.UTC))
+	note2uid := note2.Header.Uid
 	uid21 := "20240202T020202Z"
 	note2.Body = fmt.Sprintf("Refers to [[%s]] and [[%s]]", uid21, note1uid)
 

@@ -5,6 +5,7 @@ import "os"
 import "path"
 import "strings"
 import "testing"
+import "time"
 
 import "github.com/stretchr/testify/assert"
 import "github.com/radiand/zettelkasten/internal/notes"
@@ -35,6 +36,7 @@ func TestCreateNote(t *testing.T) {
 	cmdNew := &CmdNew{
 		ZettelkastenDir: zkdir,
 		WorkspaceName:   wsname,
+		Nowtime:         time.Now,
 	}
 
 	// CmdNew.Run() should print path of newly created note to stdout.

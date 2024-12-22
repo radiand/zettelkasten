@@ -3,6 +3,7 @@ package application
 import "errors"
 import "fmt"
 import "path"
+import "time"
 
 import "github.com/radiand/zettelkasten/internal/notes"
 import "github.com/radiand/zettelkasten/internal/workspaces"
@@ -11,11 +12,12 @@ import "github.com/radiand/zettelkasten/internal/workspaces"
 type CmdNew struct {
 	ZettelkastenDir string
 	WorkspaceName   string
+	Nowtime         func() time.Time
 }
 
 // Run creates new note file and prints its path to stdout.
 func (self *CmdNew) Run() error {
-	newNote := notes.NewNote()
+	newNote := notes.NewNote(self.Nowtime())
 	if ok, err := workspaces.IsOkay(self.ZettelkastenDir, self.WorkspaceName); !ok {
 		return errors.Join(
 			err, errors.New("Cannot create note in invalid workspace. Consider initializing workspace before"),
