@@ -1,6 +1,7 @@
 package application
 
 import "bytes"
+import "fmt"
 import "os"
 import "path"
 import "strings"
@@ -63,4 +64,57 @@ func TestCreateNote(t *testing.T) {
 
 	// Header should match filename UID.
 	assert.Equal(t, note.Header.Uid, noteUid)
+}
+
+func TestLinkTwoNotes(t *testing.T) {
+	zkdir := t.TempDir()
+	wsname := "workspace_name"
+	notesDir := path.Join(zkdir, wsname, "notes")
+
+	// Prepare directories the way init command would do it. We don't call init
+	// here because it is interactive.
+	os.MkdirAll(notesDir, 0777)
+
+	// Create two notes.
+	cmdNew := &CmdNew{
+		ZettelkastenDir: zkdir,
+		WorkspaceName:   wsname,
+		Nowtime:         func() time.Time { return time.Date(2024, 1, 1, 1, 1, 1, 1, time.UTC) },
+	}
+	err := cmdNew.Run()
+	assert.Nil(t, err)
+
+	cmdNew = &CmdNew{
+		ZettelkastenDir: zkdir,
+		WorkspaceName:   wsname,
+		Nowtime:         func() time.Time { return time.Date(2024, 2, 2, 2, 2, 2, 2, time.UTC) },
+	}
+	err = cmdNew.Run()
+	assert.Nil(t, err)
+
+	// Obtain list of created note UIDs, there should be two.
+	noteRepo := notes.NewFilesystemNoteRepository(notesDir)
+	noteUids, err := noteRepo.List()
+	assert.Nil(t, err)
+	assert.Equal(t, 2, len(noteUids))
+
+	// Refer to first note from second.
+	note1, _ := noteRepo.Get(noteUids[0])
+	note2, _ := noteRepo.Get(noteUids[1])
+	note2.Body = fmt.Sprintf("Refers to [[%s]]", note1.Header.Uid)
+	_, err = noteRepo.Put(note2)
+	assert.Nil(t, err)
+
+	cmdLink := &CmdLink{
+		ZettelkastenDir: zkdir,
+	}
+	err = cmdLink.Run()
+	assert.Nil(t, err)
+
+	// Check if notes are really linked now and saved.
+	note1, _ = noteRepo.Get(noteUids[0])
+	note2, _ = noteRepo.Get(noteUids[1])
+
+	assert.Equal(t, []string{note2.Header.Uid}, note1.Header.ReferredFrom)
+	assert.Equal(t, []string{note1.Header.Uid}, note2.Header.RefersTo)
 }
