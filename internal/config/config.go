@@ -11,6 +11,14 @@ type Config struct {
 	DefaultWorkspace string `toml:"default_workspace"`
 }
 
+// NewConfig creates config with default values.
+func NewConfig() Config {
+       return Config{
+               ZettelkastenDir:  "~/vault/zettelkasten",
+               DefaultWorkspace: "main",
+       }
+}
+
 // GetConfig unmarshalls Config from array of bytes.
 func GetConfig(content []byte) (Config, error) {
 	var config Config
