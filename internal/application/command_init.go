@@ -17,7 +17,7 @@ type CmdInit struct {
 }
 
 // Run performs initialization command.
-func (self *CmdInit) Run() error {
+func (self CmdInit) Run() error {
 	// Create config if not found.
 	expandedConfigPath := common.ExpandHomeDir(self.ConfigPath)
 

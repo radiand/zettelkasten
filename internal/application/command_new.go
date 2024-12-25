@@ -16,7 +16,7 @@ type CmdNew struct {
 }
 
 // Run creates new note file and prints its path to stdout.
-func (self *CmdNew) Run() error {
+func (self CmdNew) Run() error {
 	newNote := notes.NewNote(self.Nowtime())
 	if ok, err := workspaces.IsOkay(self.ZettelkastenDir, self.WorkspaceName); !ok {
 		return errors.Join(

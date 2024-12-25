@@ -34,7 +34,7 @@ func TestCreateNote(t *testing.T) {
 	// here because it is interactive.
 	os.MkdirAll(notesDir, 0777)
 
-	cmdNew := &CmdNew{
+	cmdNew := CmdNew{
 		ZettelkastenDir: zkdir,
 		WorkspaceName:   wsname,
 		Nowtime:         time.Now,
@@ -76,7 +76,7 @@ func TestLinkTwoNotes(t *testing.T) {
 	os.MkdirAll(notesDir, 0777)
 
 	// Create two notes.
-	cmdNew := &CmdNew{
+	cmdNew := CmdNew{
 		ZettelkastenDir: zkdir,
 		WorkspaceName:   wsname,
 		Nowtime:         func() time.Time { return time.Date(2024, 1, 1, 1, 1, 1, 1, time.UTC) },
@@ -84,7 +84,7 @@ func TestLinkTwoNotes(t *testing.T) {
 	err := cmdNew.Run()
 	assert.Nil(t, err)
 
-	cmdNew = &CmdNew{
+	cmdNew = CmdNew{
 		ZettelkastenDir: zkdir,
 		WorkspaceName:   wsname,
 		Nowtime:         func() time.Time { return time.Date(2024, 2, 2, 2, 2, 2, 2, time.UTC) },

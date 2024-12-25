@@ -14,7 +14,7 @@ func TestInit(t *testing.T) {
 	configPath := path.Join(tempDir, "config", "zettelkasten.toml")
 
 	// First run, it should create config file.
-	cmdInit := &CmdInit{
+	cmdInit := CmdInit{
 		ConfigPath:    configPath,
 		WorkspaceName: "",
 	}
@@ -32,7 +32,7 @@ func TestInit(t *testing.T) {
 	config.PutConfigToFile(configPath, configObj)
 
 	// Second run, it should create workspace.
-	cmdInit = &CmdInit{
+	cmdInit = CmdInit{
 		ConfigPath:    configPath,
 		WorkspaceName: "",
 	}
@@ -44,7 +44,7 @@ func TestInit(t *testing.T) {
 	assert.Equal(t, true, isWorkspace)
 
 	// Third run, create new workspace.
-	cmdInit = &CmdInit{
+	cmdInit = CmdInit{
 		ConfigPath:    configPath,
 		WorkspaceName: "fantastic_ws",
 	}

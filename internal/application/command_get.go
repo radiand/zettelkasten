@@ -18,7 +18,7 @@ type CmdGet struct {
 }
 
 // Run executes the command.
-func (self *CmdGet) Run() error {
+func (self CmdGet) Run() error {
 	expandedConfigPath := common.ExpandHomeDir(self.ConfigPath)
 	configObj, err := config.GetConfigFromFile(expandedConfigPath)
 	if err != nil {

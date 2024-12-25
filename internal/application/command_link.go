@@ -12,7 +12,7 @@ type CmdLink struct {
 
 // Run seeks for references between notes and updates their headers if there
 // are any.
-func (self *CmdLink) Run() error {
+func (self CmdLink) Run() error {
 	foundWorkspaces, err := workspaces.GetWorkspaces(self.ZettelkastenDir)
 	if err != nil {
 		return errors.Join(err, errors.New("Could not link because no workspaces were found"))
