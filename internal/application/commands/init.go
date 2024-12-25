@@ -1,4 +1,4 @@
-package application
+package commands
 
 import "errors"
 import "fmt"
@@ -9,15 +9,15 @@ import "github.com/radiand/zettelkasten/internal/common"
 import "github.com/radiand/zettelkasten/internal/config"
 import "github.com/radiand/zettelkasten/internal/workspaces"
 
-// CmdInit creates configuration file and required directories if they do not
+// Init creates configuration file and required directories if they do not
 // exist.
-type CmdInit struct {
+type Init struct {
 	ConfigPath    string
 	WorkspaceName string
 }
 
 // Run performs initialization command.
-func (self CmdInit) Run() error {
+func (self Init) Run() error {
 	// Create config if not found.
 	expandedConfigPath := common.ExpandHomeDir(self.ConfigPath)
 

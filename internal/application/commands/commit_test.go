@@ -1,4 +1,4 @@
-package application
+package commands
 
 import "testing"
 import "time"
@@ -12,7 +12,7 @@ func TestCommitWhenNoChanges(t *testing.T) {
 	gitMock := git.NewMockGit()
 	gitMock.StatusReturns.Enqueue([]git.FileStatus{})
 
-	cmdCommit := CmdCommit{
+	cmdCommit := Commit{
 		Dirs:       []string{"/tmp"}, // Does not matter.
 		GitFactory: func(string) git.IGit { return &gitMock },
 	}
@@ -37,7 +37,7 @@ func TestCommitChanges(t *testing.T) {
 		},
 	)
 
-	cmdCommit := CmdCommit{
+	cmdCommit := Commit{
 		Dirs:       []string{"/tmp"}, // Does not matter.
 		GitFactory: func(string) git.IGit { return &gitMock },
 	}
@@ -79,7 +79,7 @@ func TestCommitOldEnough(t *testing.T) {
 	}
 
 	cooldown, _ := time.ParseDuration("60s")
-	cmdCommit := CmdCommit{
+	cmdCommit := Commit{
 		Dirs:       []string{"/virtual/zettelkasten"},
 		GitFactory: func(string) git.IGit { return &gitMock },
 		Nowtime:    testutils.Then(t0.Add(time.Second * 61)),

@@ -1,4 +1,4 @@
-package application
+package queries
 
 import "errors"
 import "fmt"
@@ -10,15 +10,15 @@ import "github.com/radiand/zettelkasten/internal/config"
 import "github.com/radiand/zettelkasten/internal/notes"
 import "github.com/radiand/zettelkasten/internal/workspaces"
 
-// CmdGet allows reading and printing config.
-type CmdGet struct {
+// Get allows reading and printing config.
+type Get struct {
 	ConfigPath  string
 	ProvidePath bool
 	Query       []string
 }
 
 // Run executes the command.
-func (self CmdGet) Run() error {
+func (self Get) Run() error {
 	expandedConfigPath := common.ExpandHomeDir(self.ConfigPath)
 	configObj, err := config.GetConfigFromFile(expandedConfigPath)
 	if err != nil {

@@ -1,4 +1,4 @@
-package application
+package commands
 
 import "errors"
 import "fmt"
@@ -8,15 +8,15 @@ import "time"
 import "github.com/radiand/zettelkasten/internal/notes"
 import "github.com/radiand/zettelkasten/internal/workspaces"
 
-// CmdNew carries required params to run command.
-type CmdNew struct {
+// New carries required params to run command.
+type New struct {
 	ZettelkastenDir string
 	WorkspaceName   string
 	Nowtime         func() time.Time
 }
 
 // Run creates new note file and prints its path to stdout.
-func (self CmdNew) Run() error {
+func (self New) Run() error {
 	newNote := notes.NewNote(self.Nowtime())
 	if ok, err := workspaces.IsOkay(self.ZettelkastenDir, self.WorkspaceName); !ok {
 		return errors.Join(

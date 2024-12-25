@@ -8,7 +8,8 @@ import "fmt"
 import "os"
 import "time"
 
-import "github.com/radiand/zettelkasten/internal/application"
+import "github.com/radiand/zettelkasten/internal/application/commands"
+import "github.com/radiand/zettelkasten/internal/application/queries"
 import "github.com/radiand/zettelkasten/internal/common"
 import "github.com/radiand/zettelkasten/internal/config"
 import "github.com/radiand/zettelkasten/internal/git"
@@ -146,7 +147,7 @@ func main() {
 
 	if globalArgs.subcommand == "init" {
 		parsedArgs := parseCmdInit(globalArgs.subArgs)
-		cmdInitRunner := application.CmdInit{
+		cmdInitRunner := commands.Init{
 			ConfigPath:    globalArgs.configPath,
 			WorkspaceName: parsedArgs.workspaceName,
 		}
@@ -169,7 +170,7 @@ func main() {
 		if parsedArgs.workspaceName != "" {
 			workspaceName = parsedArgs.workspaceName
 		}
-		cmdNewRunner := application.CmdNew{
+		cmdNewRunner := commands.New{
 			ZettelkastenDir: zettelkastenDir,
 			WorkspaceName:   workspaceName,
 			Nowtime:         common.Now,
@@ -177,14 +178,14 @@ func main() {
 		try(cmdNewRunner.Run(), "Command failed.")
 	case "link":
 		parseCmdLink(globalArgs.subArgs)
-		cmdLinkRunner := application.CmdLink{
+		cmdLinkRunner := commands.Link{
 			ZettelkastenDir: zettelkastenDir,
 		}
 		try(cmdLinkRunner.Run(), "Command failed.")
 	case "commit":
 		trackedDirectories := []string{zettelkastenDir}
 		parsedArgs := parseCmdCommit(globalArgs.subArgs)
-		cmdCommitRunner := application.CmdCommit{
+		cmdCommitRunner := commands.Commit{
 			Dirs:       trackedDirectories,
 			GitFactory: gitFactory,
 			Nowtime:    common.Now,
@@ -194,7 +195,7 @@ func main() {
 		try(cmdCommitRunner.Run(), "Command failed.")
 	case "get":
 		parsedArgs := parseCmdGet(globalArgs.subArgs)
-		cmdGetRunner := application.CmdGet{
+		cmdGetRunner := queries.Get{
 			ConfigPath:  globalArgs.configPath,
 			ProvidePath: parsedArgs.providePath,
 			Query:       parsedArgs.query,

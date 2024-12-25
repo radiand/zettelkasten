@@ -9,6 +9,8 @@ import "testing"
 import "time"
 
 import "github.com/stretchr/testify/assert"
+
+import "github.com/radiand/zettelkasten/internal/application/commands"
 import "github.com/radiand/zettelkasten/internal/notes"
 
 // captureStdout calls given function and returns what it printed to stdout and
@@ -34,7 +36,7 @@ func TestCreateNote(t *testing.T) {
 	// here because it is interactive.
 	os.MkdirAll(notesDir, 0777)
 
-	cmdNew := CmdNew{
+	cmdNew := commands.New{
 		ZettelkastenDir: zkdir,
 		WorkspaceName:   wsname,
 		Nowtime:         time.Now,
@@ -76,7 +78,7 @@ func TestLinkTwoNotes(t *testing.T) {
 	os.MkdirAll(notesDir, 0777)
 
 	// Create two notes.
-	cmdNew := CmdNew{
+	cmdNew := commands.New{
 		ZettelkastenDir: zkdir,
 		WorkspaceName:   wsname,
 		Nowtime:         func() time.Time { return time.Date(2024, 1, 1, 1, 1, 1, 1, time.UTC) },
@@ -84,7 +86,7 @@ func TestLinkTwoNotes(t *testing.T) {
 	err := cmdNew.Run()
 	assert.Nil(t, err)
 
-	cmdNew = CmdNew{
+	cmdNew = commands.New{
 		ZettelkastenDir: zkdir,
 		WorkspaceName:   wsname,
 		Nowtime:         func() time.Time { return time.Date(2024, 2, 2, 2, 2, 2, 2, time.UTC) },
@@ -105,7 +107,7 @@ func TestLinkTwoNotes(t *testing.T) {
 	_, err = noteRepo.Put(note2)
 	assert.Nil(t, err)
 
-	cmdLink := &CmdLink{
+	cmdLink := commands.Link{
 		ZettelkastenDir: zkdir,
 	}
 	err = cmdLink.Run()

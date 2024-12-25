@@ -1,4 +1,4 @@
-package application
+package commands
 
 import "fmt"
 import "errors"
@@ -8,8 +8,8 @@ import "path"
 
 import "github.com/radiand/zettelkasten/internal/git"
 
-// CmdCommit carries required params to run command.
-type CmdCommit struct {
+// Commit carries required params to run command.
+type Commit struct {
 	Dirs       []string
 	GitFactory func(workdir string) git.IGit
 	Nowtime    func() time.Time
@@ -18,7 +18,7 @@ type CmdCommit struct {
 }
 
 // Run performs git commit with all changes that happened in RootDir directory.
-func (self CmdCommit) Run() error {
+func (self Commit) Run() error {
 	for _, path := range self.Dirs {
 		err := self.run(path)
 		if err != nil {
@@ -28,7 +28,7 @@ func (self CmdCommit) Run() error {
 	return nil
 }
 
-func (self CmdCommit) run(workdir string) error {
+func (self Commit) run(workdir string) error {
 	gitHandler := self.GitFactory(workdir)
 	var addErr error
 	if self.Cooldown > 0 {
@@ -66,7 +66,7 @@ func (self CmdCommit) run(workdir string) error {
 	return nil
 }
 
-func (self CmdCommit) filterPathsStillInCooldown(workdir string) ([]string, error) {
+func (self Commit) filterPathsStillInCooldown(workdir string) ([]string, error) {
 	gitHandler := self.GitFactory(workdir)
 	statuses, err := gitHandler.Status()
 	if err != nil {
