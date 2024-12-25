@@ -82,7 +82,7 @@ func TestCommitOldEnough(t *testing.T) {
 	cmdCommit := Commit{
 		Dirs:       []string{"/virtual/zettelkasten"},
 		GitFactory: func(string) git.IGit { return &gitMock },
-		Nowtime:    testutils.Then(t0.Add(time.Second * 61)),
+		Nowtime:    func() time.Time { return t0.Add(time.Second * 61) },
 		Modtime:    testutils.TimeOfPath(pathModTimes),
 		Cooldown:   cooldown,
 	}
