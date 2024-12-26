@@ -1,7 +1,6 @@
 package commands
 
 import "errors"
-import "fmt"
 import "path"
 import "time"
 
@@ -16,10 +15,10 @@ type New struct {
 }
 
 // Run creates new note file and prints its path to stdout.
-func (self New) Run() error {
+func (self New) Run() (string, error) {
 	newNote := notes.NewNote(self.Nowtime())
 	if ok, err := workspaces.IsOkay(self.ZettelkastenDir, self.WorkspaceName); !ok {
-		return errors.Join(
+		return "", errors.Join(
 			err, errors.New("Cannot create note in invalid workspace. Consider initializing workspace before"),
 		)
 	}
@@ -27,8 +26,7 @@ func (self New) Run() error {
 	repo := notes.NewFilesystemNoteRepository(destinationDirPath)
 	notePath, err := repo.Put(newNote)
 	if err != nil {
-		return errors.Join(err, errors.New("Cannot save note"))
+		return "", errors.Join(err, errors.New("Cannot save note"))
 	}
-	fmt.Println(notePath)
-	return nil
+	return notePath, nil
 }

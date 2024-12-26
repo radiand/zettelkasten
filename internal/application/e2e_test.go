@@ -1,6 +1,5 @@
 package application
 
-import "bytes"
 import "fmt"
 import "os"
 import "path"
@@ -12,20 +11,6 @@ import "github.com/stretchr/testify/assert"
 
 import "github.com/radiand/zettelkasten/internal/application/commands"
 import "github.com/radiand/zettelkasten/internal/notes"
-
-// captureStdout calls given function and returns what it printed to stdout and
-// errors that it returned.
-func captureStdout(fn func() error) (string, error) {
-	originalStdout := os.Stdout
-	r, w, _ := os.Pipe()
-	os.Stdout = w
-	capturedErr := fn()
-	os.Stdout = originalStdout
-	w.Close()
-	var buf bytes.Buffer
-	_, _ = buf.ReadFrom(r)
-	return buf.String(), capturedErr
-}
 
 func TestCreateNote(t *testing.T) {
 	zkdir := t.TempDir()
@@ -42,8 +27,8 @@ func TestCreateNote(t *testing.T) {
 		Nowtime:         time.Now,
 	}
 
-	// CmdNew.Run() should print path of newly created note to stdout.
-	notePath, err := captureStdout(cmdNew.Run)
+	// CmdNew.Run() should return path of newly created note to stdout.
+	notePath, err := cmdNew.Run()
 	assert.Nil(t, err)
 
 	// Printed path should be absolute.
@@ -83,7 +68,7 @@ func TestLinkTwoNotes(t *testing.T) {
 		WorkspaceName:   wsname,
 		Nowtime:         func() time.Time { return time.Date(2024, 1, 1, 1, 1, 1, 1, time.UTC) },
 	}
-	err := cmdNew.Run()
+	_, err := cmdNew.Run()
 	assert.Nil(t, err)
 
 	cmdNew = commands.New{
@@ -91,7 +76,7 @@ func TestLinkTwoNotes(t *testing.T) {
 		WorkspaceName:   wsname,
 		Nowtime:         func() time.Time { return time.Date(2024, 2, 2, 2, 2, 2, 2, time.UTC) },
 	}
-	err = cmdNew.Run()
+	_, err = cmdNew.Run()
 	assert.Nil(t, err)
 
 	// Obtain list of created note UIDs, there should be two.
@@ -110,7 +95,7 @@ func TestLinkTwoNotes(t *testing.T) {
 	cmdLink := commands.Link{
 		ZettelkastenDir: zkdir,
 	}
-	err = cmdLink.Run()
+	_, err = cmdLink.Run()
 	assert.Nil(t, err)
 
 	// Check if notes are really linked now and saved.

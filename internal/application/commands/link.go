@@ -12,19 +12,19 @@ type Link struct {
 
 // Run seeks for references between notes and updates their headers if there
 // are any.
-func (self Link) Run() error {
+func (self Link) Run() (string, error) {
 	foundWorkspaces, err := workspaces.GetWorkspaces(self.ZettelkastenDir)
 	if err != nil {
-		return errors.Join(err, errors.New("Could not link because no workspaces were found"))
+		return "", errors.Join(err, errors.New("Could not link because no workspaces were found"))
 	}
 
 	for _, ws := range foundWorkspaces {
 		repository := notes.NewFilesystemNoteRepository(ws.GetNotesPath())
 		err := notes.LinkNotes(repository)
 		if err != nil {
-			return errors.Join(err, errors.New("CmdLink failed"))
+			return "", errors.Join(err, errors.New("CmdLink failed"))
 		}
 	}
 
-	return nil
+	return "", nil
 }

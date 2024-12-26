@@ -18,7 +18,7 @@ func TestInit(t *testing.T) {
 		ConfigPath:    configPath,
 		WorkspaceName: "",
 	}
-	err := cmdInit.Run()
+	_, err := cmdInit.Run()
 	assert.Nil(t, err)
 
 	// Check if config was created.
@@ -36,7 +36,7 @@ func TestInit(t *testing.T) {
 		ConfigPath:    configPath,
 		WorkspaceName: "",
 	}
-	err = cmdInit.Run()
+	_, err = cmdInit.Run()
 	assert.Nil(t, err)
 
 	// Check if workspace was created.
@@ -48,7 +48,7 @@ func TestInit(t *testing.T) {
 		ConfigPath:    configPath,
 		WorkspaceName: "fantastic_ws",
 	}
-	err = cmdInit.Run()
+	_, err = cmdInit.Run()
 	assert.Nil(t, err)
 
 	// Check if workspace was created.

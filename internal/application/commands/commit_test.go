@@ -18,7 +18,7 @@ func TestCommitWhenNoChanges(t *testing.T) {
 	}
 
 	// WHEN
-	err := cmdCommit.Run()
+	_, err := cmdCommit.Run()
 
 	// THEN
 	assert.Nil(t, err)
@@ -43,7 +43,7 @@ func TestCommitChanges(t *testing.T) {
 	}
 
 	// WHEN
-	err := cmdCommit.Run()
+	_, err := cmdCommit.Run()
 
 	// THEN
 	assert.Nil(t, err)
@@ -88,7 +88,7 @@ func TestCommitOldEnough(t *testing.T) {
 	}
 
 	// WHEN
-	err := cmdCommit.Run()
+	_, err := cmdCommit.Run()
 
 	// THEN
 	assert.Nil(t, err)

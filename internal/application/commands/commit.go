@@ -18,14 +18,14 @@ type Commit struct {
 }
 
 // Run performs git commit with all changes that happened in RootDir directory.
-func (self Commit) Run() error {
+func (self Commit) Run() (string, error) {
 	for _, path := range self.Dirs {
 		err := self.run(path)
 		if err != nil {
-			return err
+			return "", err
 		}
 	}
-	return nil
+	return "", nil
 }
 
 func (self Commit) run(workdir string) error {

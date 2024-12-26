@@ -17,20 +17,19 @@ type Init struct {
 }
 
 // Run performs initialization command.
-func (self Init) Run() error {
+func (self Init) Run() (string, error) {
 	// Create config if not found.
 	expandedConfigPath := common.ExpandHomeDir(self.ConfigPath)
 
 	isConfigFile, _ := common.Exists(expandedConfigPath)
 	if !isConfigFile {
-		fmt.Printf("Creating configuration file in %s.\n", expandedConfigPath)
 		os.MkdirAll(path.Dir(expandedConfigPath), 0766)
 		err := config.PutConfigToFile(expandedConfigPath, config.NewConfig())
 		if err != nil {
-			return err
+			return "", err
 		}
-		fmt.Println("Please open configuration file, review default values and modify them as you wish. When done, run init command once again to finalize.")
-		return nil
+		out := fmt.Sprintf("Created configuration file in: %s.\nOpen it now, review and modify default values. When done, run init once again to finalize.", expandedConfigPath)
+		return out, nil
 	}
 
 	configObj, _ := config.GetConfigFromFile(expandedConfigPath)
@@ -44,10 +43,10 @@ func (self Init) Run() error {
 
 	_, err := workspaces.IsOkay(expandedRootPath, workspaceName)
 	if errors.Is(err, workspaces.ErrOsFailure) {
-		return err
+		return "", err
 	}
 	if errors.Is(err, workspaces.ErrMalformed) {
-		return errors.Join(
+		return "", errors.Join(
 			err, fmt.Errorf(
 				"Workspace %s exists, but does not conform template",
 				path.Join(expandedRootPath, workspaceName),
@@ -56,14 +55,14 @@ func (self Init) Run() error {
 	}
 
 	if errors.Is(err, workspaces.ErrNotExists) {
-		fmt.Printf("Creating workspace %s/%s.\n", expandedRootPath, workspaceName)
 		err := workspaces.CreateWorkspace(expandedRootPath, workspaceName)
+		out := fmt.Sprintf("Created workspace %s/%s.", expandedRootPath, workspaceName)
 		if err != nil {
-			return err
+			return out, err
 		}
 	}
 
-	return nil
+	return "Nothing to do.", nil
 }
 
 func chooseFirstNonEmpty(choice ...string) string {

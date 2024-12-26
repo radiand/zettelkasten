@@ -3,11 +3,13 @@ Zettelkasten - plain text notes with toml metadata
 */
 package main
 
+import "errors"
 import "flag"
 import "fmt"
 import "os"
 import "time"
 
+import "github.com/radiand/zettelkasten/internal/application"
 import "github.com/radiand/zettelkasten/internal/application/commands"
 import "github.com/radiand/zettelkasten/internal/application/queries"
 import "github.com/radiand/zettelkasten/internal/common"
@@ -144,6 +146,7 @@ func parseCmdLink(args []string) {
 
 func main() {
 	globalArgs := parseGlobalArgs()
+	verbose := true
 
 	if globalArgs.subcommand == "init" {
 		parsedArgs := parseCmdInit(globalArgs.subArgs)
@@ -151,7 +154,7 @@ func main() {
 			ConfigPath:    globalArgs.configPath,
 			WorkspaceName: parsedArgs.workspaceName,
 		}
-		try(cmdInitRunner.Run(), "Command failed.")
+		run(cmdInitRunner, verbose)
 		os.Exit(0)
 	}
 
@@ -175,13 +178,13 @@ func main() {
 			WorkspaceName:   workspaceName,
 			Nowtime:         common.Now,
 		}
-		try(cmdNewRunner.Run(), "Command failed.")
+		run(cmdNewRunner, verbose)
 	case "link":
 		parseCmdLink(globalArgs.subArgs)
 		cmdLinkRunner := commands.Link{
 			ZettelkastenDir: zettelkastenDir,
 		}
-		try(cmdLinkRunner.Run(), "Command failed.")
+		run(cmdLinkRunner, verbose)
 	case "commit":
 		trackedDirectories := []string{zettelkastenDir}
 		parsedArgs := parseCmdCommit(globalArgs.subArgs)
@@ -192,7 +195,7 @@ func main() {
 			Modtime:    common.ModificationTime,
 			Cooldown:   parsedArgs.cooldown,
 		}
-		try(cmdCommitRunner.Run(), "Command failed.")
+		run(cmdCommitRunner, verbose)
 	case "get":
 		parsedArgs := parseCmdGet(globalArgs.subArgs)
 		cmdGetRunner := queries.Get{
@@ -200,11 +203,24 @@ func main() {
 			ProvidePath: parsedArgs.providePath,
 			Query:       parsedArgs.query,
 		}
-		try(cmdGetRunner.Run(), "Command failed.")
+		run(cmdGetRunner, verbose)
 	default:
 		fmt.Fprintf(os.Stderr, "Unsupported command: '%s'\n", globalArgs.subcommand)
 		os.Exit(1)
 	}
+}
+
+func run(runnable application.Runnable, verbose bool) {
+	out, err := runnable.Run()
+	if err != nil {
+		if verbose {
+			fmt.Fprintln(os.Stderr, common.FmtErrors(err))
+		} else {
+			fmt.Fprintln(os.Stderr, errors.Unwrap(err))
+		}
+		os.Exit(1)
+	}
+	fmt.Fprintln(os.Stdout, out)
 }
 
 func try(err error, message string) {
