@@ -31,9 +31,9 @@ func (self Get) Run() (string, error) {
 	switch self.Query[0] {
 	case "config":
 		return handleConfigQuery(configObj, self.Query)
-	case "note":
+	case "note", "notes":
 		return handleNoteQuery(configObj, self.Query, self.ProvidePath)
-	case "workspace":
+	case "workspace", "workspaces":
 		return handleWorkspaceQuery(configObj, self.Query, self.ProvidePath)
 	}
 
