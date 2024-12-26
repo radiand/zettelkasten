@@ -25,7 +25,7 @@ func (self Get) Run() (string, error) {
 	}
 
 	if len(self.Query) == 0 {
-		return "", errors.New("Query must contain resource and key")
+		return "", errors.New("Query must specify resource (available: config, note, workspace)")
 	}
 
 	switch self.Query[0] {
@@ -42,7 +42,7 @@ func (self Get) Run() (string, error) {
 
 func handleConfigQuery(cfg config.Config, query []string) (string, error) {
 	if len(query) < 2 {
-		return "", errors.New("To seek configuration, desired key is required")
+		return "", errors.New("Query must specify config field to be read")
 	}
 	value := reflect.ValueOf(cfg).FieldByName(query[1])
 	if !value.IsValid() {
@@ -53,7 +53,7 @@ func handleConfigQuery(cfg config.Config, query []string) (string, error) {
 
 func handleNoteQuery(cfg config.Config, query []string, providePath bool) (string, error) {
 	if len(query) < 2 {
-		return "", errors.New("Missing note UID")
+		return "", errors.New("Query must contain note UID")
 	}
 
 	uid := query[1]
