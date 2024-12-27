@@ -3,7 +3,6 @@ Zettelkasten - plain text notes with toml metadata
 */
 package main
 
-import "errors"
 import "flag"
 import "fmt"
 import "os"
@@ -27,6 +26,7 @@ var COMMANDS = map[string]string{
 
 type globalArgs struct {
 	configPath string
+	verbose    bool
 	subcommand string
 	subArgs    []string
 }
@@ -54,6 +54,11 @@ func parseGlobalArgs() globalArgs {
 		"~/.config/zettelkasten/config.toml",
 		"Path to config.toml file",
 	)
+	verbose := flag.Bool(
+		"v",
+		false,
+		"Turn on verbose messages, e.g. detailed error backtrace",
+	)
 	usage := common.BuildUsage("zettelkasten", "Note management").WithCommands(COMMANDS)
 	flag.Usage = func() { common.Flagprint(usage.Render(flag.CommandLine)) }
 	flag.Parse()
@@ -65,7 +70,7 @@ func parseGlobalArgs() globalArgs {
 	}
 	cmd, args := args[0], args[1:]
 
-	return globalArgs{configPath: *configPath, subcommand: cmd, subArgs: args}
+	return globalArgs{configPath: *configPath, verbose: *verbose, subcommand: cmd, subArgs: args}
 }
 
 func parseCmdNew(args []string) cmdNewArgs {
@@ -146,7 +151,6 @@ func parseCmdLink(args []string) {
 
 func main() {
 	globalArgs := parseGlobalArgs()
-	verbose := true
 
 	if globalArgs.subcommand == "init" {
 		parsedArgs := parseCmdInit(globalArgs.subArgs)
@@ -154,7 +158,7 @@ func main() {
 			ConfigPath:    globalArgs.configPath,
 			WorkspaceName: parsedArgs.workspaceName,
 		}
-		run(cmdInitRunner, verbose)
+		run(cmdInitRunner, globalArgs.verbose)
 		os.Exit(0)
 	}
 
@@ -178,13 +182,13 @@ func main() {
 			WorkspaceName:   workspaceName,
 			Nowtime:         common.Now,
 		}
-		run(cmdNewRunner, verbose)
+		run(cmdNewRunner, globalArgs.verbose)
 	case "link":
 		parseCmdLink(globalArgs.subArgs)
 		cmdLinkRunner := commands.Link{
 			ZettelkastenDir: zettelkastenDir,
 		}
-		run(cmdLinkRunner, verbose)
+		run(cmdLinkRunner, globalArgs.verbose)
 	case "commit":
 		trackedDirectories := []string{zettelkastenDir}
 		parsedArgs := parseCmdCommit(globalArgs.subArgs)
@@ -195,7 +199,7 @@ func main() {
 			Modtime:    common.ModificationTime,
 			Cooldown:   parsedArgs.cooldown,
 		}
-		run(cmdCommitRunner, verbose)
+		run(cmdCommitRunner, globalArgs.verbose)
 	case "get":
 		parsedArgs := parseCmdGet(globalArgs.subArgs)
 		cmdGetRunner := queries.Get{
@@ -203,7 +207,7 @@ func main() {
 			ProvidePath: parsedArgs.providePath,
 			Query:       parsedArgs.query,
 		}
-		run(cmdGetRunner, verbose)
+		run(cmdGetRunner, globalArgs.verbose)
 	default:
 		fmt.Fprintf(os.Stderr, "Unsupported command: '%s'\n", globalArgs.subcommand)
 		os.Exit(1)
@@ -216,7 +220,7 @@ func run(runnable application.Runnable, verbose bool) {
 		if verbose {
 			fmt.Fprintln(os.Stderr, common.FmtErrors(err))
 		} else {
-			fmt.Fprintln(os.Stderr, errors.Unwrap(err))
+			fmt.Fprintln(os.Stderr, common.LastError(err))
 		}
 		os.Exit(1)
 	}
@@ -225,7 +229,8 @@ func run(runnable application.Runnable, verbose bool) {
 
 func try(err error, message string) {
 	if err != nil {
-		fmt.Fprintln(os.Stderr, message+"\n", common.FmtErrors(err))
+		fmt.Fprintln(os.Stderr, message)
+		fmt.Fprintln(os.Stderr, common.FmtErrors(err))
 		os.Exit(1)
 	}
 }
