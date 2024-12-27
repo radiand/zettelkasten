@@ -56,10 +56,11 @@ func (self Init) Run() (string, error) {
 
 	if errors.Is(err, workspaces.ErrNotExists) {
 		err := workspaces.CreateWorkspace(expandedRootPath, workspaceName)
-		out := fmt.Sprintf("Created workspace %s/%s.", expandedRootPath, workspaceName)
 		if err != nil {
-			return out, err
+			return "", err
 		}
+		out := fmt.Sprintf("Created workspace %s/%s.", expandedRootPath, workspaceName)
+		return out, nil
 	}
 
 	return "Nothing to do.", nil
