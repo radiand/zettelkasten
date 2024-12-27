@@ -65,7 +65,7 @@ func parseGlobalArgs() globalArgs {
 
 	args := flag.Args()
 	if len(args) == 0 {
-		fmt.Fprintln(os.Stderr, "Please specify a subcommand. Available: new, link, commit.")
+		flag.Usage()
 		os.Exit(1)
 	}
 	cmd, args := args[0], args[1:]
