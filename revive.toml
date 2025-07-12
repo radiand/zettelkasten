@@ -25,7 +25,10 @@ warningCode = 0
 [rule.unreachable-code]
 [rule.unused-parameter]
 [rule.var-declaration]
+
 [rule.var-naming]
+# Revive treats "time" as meaningless package name.
+arguments = [[], [], [{ skipPackageNameChecks = true }]]
 
 [rule.receiver-naming]
 # Disabled, because it reports varying names in contexts, where varying names
