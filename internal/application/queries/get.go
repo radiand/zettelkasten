@@ -3,6 +3,7 @@ package queries
 import "errors"
 import "fmt"
 import "reflect"
+import "strings"
 
 import "github.com/radiand/zettelkasten/internal/common"
 import "github.com/radiand/zettelkasten/internal/config"
@@ -94,11 +95,12 @@ func handleWorkspaceQuery(cfg config.Config, query []string, providePath bool) (
 		return "", fmt.Errorf("Could not find any workspaces in %s", expandedRootPath)
 	}
 
+	lines := []string{}
 	for _, ws := range foundWorkspaces {
 		if providePath {
-			return ws.GetWorkspacePath(), nil
+			lines = append(lines, ws.GetWorkspacePath())
 		}
-		return ws.GetName(), nil
+		lines = append(lines, ws.GetName())
 	}
-	return "", nil
+	return strings.Join(lines, "\n"), nil
 }
