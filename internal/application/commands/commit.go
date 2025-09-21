@@ -82,6 +82,10 @@ func (self Commit) filterPathsStillInCooldown(workdir string) ([]string, error) 
 	now := self.Nowtime()
 	for _, status := range statuses {
 		path := path.Join(gitRootDir, status.Path)
+		// Omit modtime check for removed files.
+		if status.Unstaged == git.Deleted {
+			continue
+		}
 		modtime, err := self.Modtime(path)
 		if err != nil {
 			return []string{}, errors.Join(err, fmt.Errorf("Could not get mod time of path %s", path))
