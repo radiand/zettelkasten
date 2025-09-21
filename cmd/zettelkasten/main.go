@@ -20,7 +20,7 @@ var COMMANDS = map[string]string{
 	"init":   "Create config and required directories.",
 	"new":    "Create new note.",
 	"link":   "Find link between notes and update headers.",
-	"get":    "Get key from config or note by UID.",
+	"get":    "Get resource [config [KEY], note [UID], notes [WORKSPACE], workspace, workspaces].",
 	"commit": "Generate commit message and execute git commit.",
 }
 
