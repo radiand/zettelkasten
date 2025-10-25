@@ -1,4 +1,4 @@
-_zettelkasten_ – creating and managing plain text notes.
+_zettelkasten_ – creating and managing plain text notes. 100% LLM-free code.
 
 # Overview
 
