@@ -5,3 +5,6 @@ test:
 	go test -v ./...
 
 qa: lint test
+
+install:
+	go install ./cmd/zettelkasten
