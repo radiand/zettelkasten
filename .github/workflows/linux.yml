@@ -1,0 +1,37 @@
+name: linux
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.22'
+
+    - name: Install go packages
+      run: go install github.com/mgechev/revive@v1.10.0
+
+    - name: Lint
+      run: make lint
+
+    # Some tests use system-wide git executable and to perform commits you need
+    # to be named user.
+    - name: Setup git user
+      run: |
+        git config --global user.name "John Doe"
+        git config --global user.email "johndoe@example.com"
+
+    - name: Test
+      run: make test
+
+    - name: Install
+      run: make install
